@@ -78,7 +78,7 @@ source $ZSH/oh-my-zsh.sh
 
 # Initialize Homebrew
 # eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
-# eval "$(/opt/homebrew/bin/brew shellenv)"
+eval "$(/opt/homebrew/bin/brew shellenv)"
 
 # Add environment variables
 # export MANPATH=/usr/local/man:$MANPATH
@@ -106,7 +106,7 @@ source $ZSH/oh-my-zsh.sh
 # Example aliases
 # alias zshconfig="vim ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
-# alias cat="bat -pp --theme='Nord'"
+alias cat="bat -pp --theme='Nord'"
 alias ls="eza --color auto --icons"
 alias ll="eza -l --color always --icons"
 alias lla="ll -a -g"
@@ -115,3 +115,7 @@ alias vim="nvim"
 # Initialize fzf, zoxide
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 eval "$(zoxide init zsh)"
+
+export https_proxy=http://127.0.0.1:7890
+export http_proxy=http://127.0.0.1:7890
+export all_proxy=socks5://127.0.0.1:7890
