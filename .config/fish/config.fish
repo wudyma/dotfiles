@@ -50,4 +50,4 @@ end
 zoxide init fish | source
 
 # Initial starship
-starship init fish | source
+# starship init fish | source
