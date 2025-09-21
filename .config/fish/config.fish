@@ -3,11 +3,7 @@
 set -gx TERM xterm-256color
 
 # theme
-set -g theme_color_scheme terminal-dark
-set -g fish_prompt_pwd_dir_length 1
-set -g theme_display_user yes
-set -g theme_hide_hostname no
-set -g theme_hostname always
+source $__fish_config_dir/github_dark_default.fish
 
 # aliases
 alias ls "ls -p -G"
@@ -51,3 +47,10 @@ zoxide init fish | source
 
 # Initial starship
 # starship init fish | source
+
+# pnpm
+set -gx PNPM_HOME "/home/zheng/.local/share/pnpm"
+if not string match -q -- $PNPM_HOME $PATH
+  set -gx PATH "$PNPM_HOME" $PATH
+end
+# pnpm end

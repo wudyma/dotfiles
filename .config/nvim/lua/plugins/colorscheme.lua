@@ -1,28 +1,15 @@
 return {
 	{
-		"craftzdog/solarized-osaka.nvim",
-		lazy = true,
+		"projekt0n/github-nvim-theme",
+		name = 'github-theme',
+		lazy = false,
 		priority = 1000,
-		opts = function()
-			return {
-				transparent = true,
-			}
+		config = function()
+			require('github-theme').setup({
+				options = {
+					transparent = true
+				}
+			})
 		end,
-	},
+	}
 }
-
--- return {
--- 	{
--- 		"projekt0n/github-nvim-theme",
--- 		lazy = false,
--- 		priority = 1000,
--- 		config = function()
--- 			require('github-theme').setup({
--- 				options = {
--- 					transparent = true
--- 				}
--- 			})
--- 		end,
--- 	}
--- }
-
