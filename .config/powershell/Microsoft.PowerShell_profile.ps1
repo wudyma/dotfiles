@@ -47,5 +47,5 @@ Set-Alias ll eza_ll
 Set-Alias lla eza_lla
 Set-Alias vim nvim
 
-Invoke-Expression (&starship init powershell)
+# Invoke-Expression (&starship init powershell)
 Invoke-Expression (& { (zoxide init powershell | Out-String) })
