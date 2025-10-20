@@ -16,7 +16,6 @@
   // Theme
   "theme": "Catppuccin Espresso (Blur)",
   "project_panel": {
-    "dock": "left",
     "sticky_scroll": false
   },
   "icon_theme": "Catppuccin Mocha",
