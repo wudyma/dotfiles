@@ -15,6 +15,10 @@
   "vim_mode": true,
   // Theme
   "theme": "Catppuccin Espresso (Blur)",
+  "project_panel": {
+    "dock": "left",
+    "sticky_scroll": false
+  },
   "icon_theme": "Catppuccin Mocha",
   // Typography
   "buffer_font_family": "Maple Mono NF CN",
@@ -28,15 +32,6 @@
   "ui_font_features": {
     "calt": true
   },
-  // AI
-  "agent": {
-    "default_profile": "write",
-    "default_model": {
-      "provider": "zed.dev",
-      "model": "claude-sonnet-4-5"
-    },
-    "model_parameters": []
-  },
   // Extensions
   "auto_install_extensions": {
     "catppuccin-blur": true,
@@ -49,7 +44,13 @@
       "args": [],
       "projects": [
         {
-          "paths": ["/Users/zheng/.ghq"]
+          "paths": ["/Users/zheng/.ghq/github.com/dlphenomena/website"]
+        },
+        {
+          "paths": ["/Users/zheng/.ghq/github.com/mazhengcn/homepage"]
+        },
+        {
+          "paths": ["/Users/zheng/.ghq/github.com/mazhengcn/talks/./"]
         }
       ]
     },
@@ -57,6 +58,15 @@
       "host": "pi-sjtu",
       "args": [],
       "projects": []
+    },
+    {
+      "host": "office",
+      "args": [],
+      "projects": [
+        {
+          "paths": ["/home/zheng/repos/deeprte"]
+        }
+      ]
     }
   ]
 }
