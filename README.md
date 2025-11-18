@@ -33,14 +33,8 @@ This is the repo to store all my dotfiles and personal configs. It is forked and
 - [starship](https://starship.rs) **_(optional)_** - The minimal, blazing-fast, and infinitely customizable prompt for any shell
 - [nerd fonts](https://github.com/ryanoasis/nerd-fonts) - Powerline-patched fonts. I use [Maple Mono](https://github.com/subframe7536/maple-font) and [JetBrains Mono](https://github.com/ryanoasis/nerd-fonts/tree/master/patched-fonts/JetBrainsMono)
 - [eza](https://github.com/eza-community/eza) - A modern `ls` replacement
-- [zoxide](https://github.com/ajeetdsouza/zoxide) -  A smarter `cd` command, inspired by `z` and `autojump`
+- [zoxide](https://github.com/ajeetdsouza/zoxide) - A smarter `cd` command, inspired by `z` and `autojump`
 - [ghq](https://github.com/x-motemen/ghq) - Local git repository organizer
-
-### For Linux & macOS
-
-- [fish](https://fishshell.com/) - A smart and user-friendly command line shell for Linux, macOS, and the rest of the family
-- [fzf.fish](https://github.com/PatrickF1/fzf.fish) - Augment your fish with mnemonic key bindings to efficiently find what you need using fzf
-- [delta](https://github.com/dandavison/delta) - A syntax-highlighting pager for git, diff, and grep output
 
 ### For PowerShell on Windows
 

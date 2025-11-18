@@ -1,11 +1,4 @@
 # folders
-.config/clash
-.config/fish/completions
-.config/fish/conf.d
-.config/nvim/plugin
-fisher*
-fzf_configure*
-fish_*
 lazy*
 _*
 
