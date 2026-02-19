@@ -5,29 +5,74 @@
   "format_on_save": "on",
   "soft_wrap": "editor_width",
   "inlay_hints": {
-    "enabled": true
+    "enabled": true,
   },
   "diagnostics": {
     "inline": {
-      "enabled": true
-    }
+      "enabled": true,
+    },
+  },
+  "toolbar": {
+    "breadcrumbs": false,
+    "quick_actions": false,
   },
   // Theme
-  "theme": "Catppuccin Espresso (Blur)",
-  "icon_theme": "Catppuccin Frappé",
-  "project_panel": {
-    "sticky_scroll": false
-  },
+  "theme": "Carbonfox - blurred",
   // Typography
   "buffer_font_family": "Maple Mono NF CN",
-  "buffer_font_size": 18,
+  "buffer_font_size": 16,
   "buffer_line_height": "comfortable",
   "buffer_font_features": {
-    "calt": true
+    "calt": true,
   },
   "ui_font_family": "Maple Mono NF CN",
-  "ui_font_size": 20,
+  "ui_font_size": 18,
   "ui_font_features": {
-    "calt": true
-  }
+    "calt": true,
+  },
+  // AI
+  "agent_buffer_font_size": 16,
+  "agent": {
+    "default_model": {
+      "provider": "copilot_chat",
+      "model": "claude-sonnet-4.6",
+    },
+    "favorite_models": [],
+    "model_parameters": [],
+  },
+  // Extensions
+  "auto_install_extensions": {
+    "nvim-nightfox": true,
+  },
+  // Remote
+  "ssh_connections": [
+    {
+      "host": "office",
+      "args": [],
+      "projects": [
+        {
+          "paths": ["/home/zheng/data/repos/deeprte"],
+        },
+      ],
+    },
+    {
+      "host": "spark",
+      "args": [],
+      "projects": [
+        {
+          "paths": ["/home/zheng/repos/github.com/AI-Hypercomputer/maxtext"],
+        },
+        {
+          "paths": ["/home/zheng/repos/github.com/mazhengcn/homepage"],
+        },
+        {
+          "paths": ["/home/zheng/repos/github.com/mazhengcn/research-papers"],
+        },
+        {
+          "paths": ["/home/zheng/repos/github.com/zhounan-sjtu/nop"],
+        },
+      ],
+    },
+  ],
+  "proxy": "http://127.0.0.1:8234",
 }
