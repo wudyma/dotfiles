@@ -17,62 +17,21 @@
     "quick_actions": false,
   },
   // Theme
-  "theme": "Carbonfox - blurred",
+  "theme": "Catppuccin Espresso (Blur)",
+  "icon_theme": "Catppuccin Mocha",
   // Typography
   "buffer_font_family": "Maple Mono NF CN",
-  "buffer_font_size": 16,
-  "buffer_line_height": "comfortable",
+  "buffer_font_size": 18,
+  "buffer_line_height": {
+    "custom": 1.8,
+  },
   "buffer_font_features": {
     "calt": true,
   },
   "ui_font_family": "Maple Mono NF CN",
-  "ui_font_size": 18,
+  "ui_font_size": 20,
   "ui_font_features": {
     "calt": true,
   },
-  // AI
-  "agent_buffer_font_size": 16,
-  "agent": {
-    "default_model": {
-      "provider": "copilot_chat",
-      "model": "claude-sonnet-4.6",
-    },
-    "favorite_models": [],
-    "model_parameters": [],
-  },
-  // Extensions
-  "auto_install_extensions": {
-    "nvim-nightfox": true,
-  },
-  // Remote
-  "ssh_connections": [
-    {
-      "host": "office",
-      "args": [],
-      "projects": [
-        {
-          "paths": ["/home/zheng/data/repos/deeprte"],
-        },
-      ],
-    },
-    {
-      "host": "spark",
-      "args": [],
-      "projects": [
-        {
-          "paths": ["/home/zheng/repos/github.com/AI-Hypercomputer/maxtext"],
-        },
-        {
-          "paths": ["/home/zheng/repos/github.com/mazhengcn/homepage"],
-        },
-        {
-          "paths": ["/home/zheng/repos/github.com/mazhengcn/research-papers"],
-        },
-        {
-          "paths": ["/home/zheng/repos/github.com/zhounan-sjtu/nop"],
-        },
-      ],
-    },
-  ],
-  "proxy": "http://127.0.0.1:8234",
+  "agent_buffer_font_size": 18,
 }
