@@ -7,7 +7,6 @@ This is the repo to store all my dotfiles and personal configs. It is forked and
 - vim (Neovim)
 - tmux
 - git
-- fish
 - zsh
 - PowerShell
 - zed
@@ -27,7 +26,6 @@ This is the repo to store all my dotfiles and personal configs. It is forked and
   - **find files**: [fd](https://github.com/sharkdp/fd)
 - a terminal that support true color and _undercurl_:
   - [warp](https://www.warp.dev) (**_Linux, macOS & Windows_**)
-- [Solarized Osaka](https://github.com/craftzdog/solarized-osaka.nvim)
 
 ## Shell setup (Linux, macOS & Windows)
 

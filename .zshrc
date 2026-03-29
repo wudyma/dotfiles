@@ -14,9 +14,8 @@ alias lla="ll -a -g"
 export BUN_INSTALL="$HOME/.bun"
 export PATH="$BUN_INSTALL/bin:$PATH"
 
-# Initialize fzf, zoxide
+# Initialize fzf
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
-eval "$(zoxide init zsh)"
 
-# Initialize starship
-eval "$(starship init zsh)"
+# Initialize zoxide and starship
+eval "$(zoxide init zsh)" && eval "$(starship init zsh)"
