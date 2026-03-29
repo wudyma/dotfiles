@@ -5,16 +5,16 @@
   "format_on_save": "on",
   "soft_wrap": "editor_width",
   "inlay_hints": {
-    "enabled": true
+    "enabled": true,
   },
   "diagnostics": {
     "inline": {
-      "enabled": true
-    }
+      "enabled": true,
+    },
   },
   "toolbar": {
     "breadcrumbs": false,
-    "quick_actions": false
+    "quick_actions": false,
   },
   // Theme
   "theme": "Catppuccin Espresso (Blur)",
@@ -23,14 +23,19 @@
   "buffer_font_family": "Maple Mono NF CN",
   "buffer_font_size": 18,
   "buffer_line_height": {
-    "custom": 1.8
+    "custom": 1.8,
   },
   "buffer_font_features": {
-    "calt": true
+    "calt": true,
   },
   "ui_font_family": "Maple Mono NF CN",
   "ui_font_features": {
-    "calt": true
+    "calt": true,
   },
-  "agent_buffer_font_size": 18
+  "agent_buffer_font_size": 18,
+  // Extensions
+  "auto_install_extensions": {
+    "catppuccin-blur": true,
+    "catppuccin-icons": true,
+  },
 }
