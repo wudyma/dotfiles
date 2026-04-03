@@ -8,15 +8,9 @@ alias la="ls -a -g"
 alias ll="eza -l --color always --icons"
 alias lla="ll -a -g"
 
-# bun completions
-[ -s "/Users/zheng/.bun/_bun" ] && source "/Users/zheng/.bun/_bun"
-
-# bun
-export BUN_INSTALL="$HOME/.bun"
-export PATH="$BUN_INSTALL/bin:$PATH"
-
 # Initialize fzf
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
 # Initialize zoxide and starship
-eval "$(zoxide init zsh)" && eval "$(starship init zsh)"
+eval "$(zoxide init zsh)"
+eval "$(starship init zsh)"
