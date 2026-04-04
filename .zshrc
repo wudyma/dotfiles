@@ -12,5 +12,5 @@ alias lla="ll -a -g"
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
 # Initialize zoxide and starship
-eval "$(zoxide init zsh)"
 eval "$(starship init zsh)"
+eval "$(zoxide init zsh)"
