@@ -1,0 +1,112 @@
+[
+	{
+		"name": "papers",
+		"rootPath": "vscode-remote://ssh-remote+spark/home/zheng/repos/github.com/mazhengcn/papers",
+		"paths": [],
+		"tags": [
+			"spark"
+		],
+		"enabled": true,
+		"profile": ""
+	},
+	{
+		"name": "nop",
+		"rootPath": "vscode-remote://ssh-remote+office/home/zheng/repos/github.com/zhounan-sjtu/nop",
+		"paths": [],
+		"tags": [
+			"office"
+		],
+		"enabled": true,
+		"profile": ""
+	},
+	{
+		"name": "cv",
+		"rootPath": "vscode-remote://ssh-remote+spark/home/zheng/repos/github.com/mazhengcn/cv",
+		"paths": [],
+		"tags": [
+			"spark"
+		],
+		"enabled": true,
+		"profile": ""
+	},
+	{
+		"name": "relaxation-nn",
+		"rootPath": "vscode-remote://ssh-remote+office/home/zheng/repos/github.com/mazhengcn/relaxation-nn",
+		"paths": [],
+		"tags": [
+			"office"
+		],
+		"enabled": true,
+		"profile": ""
+	},
+	{
+		"name": "deeprte",
+		"rootPath": "vscode-remote://ssh-remote+office/home/zheng/repos/github.com/mazhengcn/deeprte",
+		"paths": [],
+		"tags": [
+			"office"
+		],
+		"enabled": true,
+		"profile": ""
+	},
+	{
+		"name": "diffuser-fwi",
+		"rootPath": "vscode-remote://ssh-remote+office/home/zheng/repos/github.com/mazhengcn/diffuser-fwi",
+		"paths": [],
+		"tags": [
+			"office"
+		],
+		"enabled": true,
+		"profile": ""
+	},
+	{
+		"name": "teachings",
+		"rootPath": "vscode-remote://ssh-remote+spark/home/zheng/repos/github.com/mazhengcn/teachings",
+		"paths": [],
+		"tags": [
+			"spark"
+		],
+		"enabled": true,
+		"profile": ""
+	},
+	{
+		"name": "talks",
+		"rootPath": "vscode-remote://ssh-remote+spark/home/zheng/repos/github.com/mazhengcn/talks",
+		"paths": [],
+		"tags": [
+			"spark"
+		],
+		"enabled": true,
+		"profile": ""
+	},
+	{
+		"name": "homepage",
+		"rootPath": "vscode-remote://ssh-remote+spark/home/zheng/repos/github.com/mazhengcn/homepage",
+		"paths": [],
+		"tags": [
+			"spark"
+		],
+		"enabled": true,
+		"profile": ""
+	},
+	{
+		"name": "computational-methods",
+		"rootPath": "vscode-remote://ssh-remote+spark/home/zheng/repos/github.com/mazhengcn/computational-methods",
+		"paths": [],
+		"tags": [
+			"spark"
+		],
+		"enabled": true,
+		"profile": ""
+	},
+	{
+		"name": "grants",
+		"rootPath": "vscode-remote://ssh-remote+spark/home/zheng/repos/github.com/mazhengcn/grants",
+		"paths": [],
+		"tags": [
+			"spark"
+		],
+		"enabled": true,
+		"profile": ""
+	}
+]
