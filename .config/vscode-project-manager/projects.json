@@ -108,5 +108,15 @@
 		],
 		"enabled": true,
 		"profile": ""
+	},
+	{
+		"name": "unitarylab",
+		"rootPath": "vscode-remote://ssh-remote+spark/home/zheng/repos/github.com/mazhengcn/unitarylab",
+		"paths": [],
+		"tags": [
+			"spark"
+		],
+		"enabled": true,
+		"profile": ""
 	}
 ]
