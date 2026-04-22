@@ -35,8 +35,7 @@
   required = true
   process = git-lfs filter-process
 [ghq]
-  # root = ~/repos
-  root = ~/Repos
+  root = ~/repos
 [user]
   name = Zheng Ma
   email = mazhengcn@outlook.com
