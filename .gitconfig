@@ -39,3 +39,6 @@
 [user]
   name = Zheng Ma
   email = mazhengcn@outlook.com
+[credential]
+	helper =
+	helper = /usr/local/share/gcm-core/git-credential-manager
