@@ -13,7 +13,7 @@
     },
   },
   // Typography
-  "buffer_font_family": "Maple Mono NF",
+  "buffer_font_family": "Maple Mono NF CN",
   "buffer_font_size": 18,
   "buffer_line_height": {
     "custom": 1.8,
@@ -21,7 +21,7 @@
   "buffer_font_features": {
     "calt": true,
   },
-  "ui_font_family": "Maple Mono NF",
+  "ui_font_family": "Maple Mono NF CN",
   "ui_font_features": {
     "calt": true,
   },
