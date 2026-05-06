@@ -1,15 +1,20 @@
 return {
 	{
-		"projekt0n/github-nvim-theme",
-		name = 'github-theme',
-		lazy = false,
-		priority = 1000,
-		config = function()
-			require('github-theme').setup({
-				options = {
-					transparent = true
-				}
-			})
-		end,
+		"folke/tokyonight.nvim",
+		opts = {
+			style = "night",
+			transparent = true,
+			terminal_colors = true,
+			styles = {
+				sidebars = "dark",
+				floats = "dark",
+			},
+		},
+	},
+	{
+		"LazyVim/LazyVim",
+		opts = {
+			colorscheme = "tokyonight",
+		},
 	}
 }

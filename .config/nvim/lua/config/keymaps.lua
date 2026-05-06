@@ -1,7 +1,3 @@
-local discipline = require("craftzdog.discipline")
-
-discipline.cowboy()
-
 local keymap = vim.keymap
 local opts = { noremap = true, silent = true }
 
@@ -62,10 +58,6 @@ keymap.set("n", "<C-w><down>", "<C-w>-")
 keymap.set("n", "<C-j>", function()
 	vim.diagnostic.goto_next()
 end, opts)
-
-keymap.set("n", "<leader>r", function()
-	require("craftzdog.hsl").replaceHexWithHSL()
-end)
 
 keymap.set("n", "<leader>i", function()
 	require("craftzdog.lsp").toggleInlayHints()
