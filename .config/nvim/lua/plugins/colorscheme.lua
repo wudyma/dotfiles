@@ -10,7 +10,12 @@ return {
 					transparent = true,
 				},
 			})
-			vim.cmd("colorscheme github_dark_default")
 		end,
+	},
+	{
+		"LazyVim/LazyVim",
+		opts = {
+			colorscheme = "github_dark_default",
+		},
 	},
 }
