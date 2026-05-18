@@ -10,6 +10,12 @@ detect_os() {
         Linux)  OS="linux" ;;
         *)      echo "Unsupported OS: $(uname -s)"; exit 1 ;;
     esac
+    # Normalize architecture (ARCH_ALT uses Go-style names: amd64/arm64)
+    case "$(uname -m)" in
+        x86_64)        ARCH="x86_64" ; ARCH_ALT="amd64" ;;
+        aarch64|arm64) ARCH="arm64"  ; ARCH_ALT="arm64" ;;
+        *)             ARCH="$(uname -m)"; ARCH_ALT="$(uname -m)" ;;
+    esac
 }
 
 # ─── helpers ─────────────────────────────────────────────────────────────────
@@ -149,7 +155,7 @@ install_linux_deps() {
             # Neovim — prefer appimage or manual install for freshness
             if ! command -v nvim &>/dev/null; then
                 step "installing neovim via appimage"
-                curl -Lo /tmp/nvim.appimage https://github.com/neovim/neovim/releases/latest/download/nvim-linux-x86_64.appimage
+                curl -Lo /tmp/nvim.appimage "https://github.com/neovim/neovim/releases/latest/download/nvim-linux-${ARCH}.appimage"
                 chmod +x /tmp/nvim.appimage
                 sudo mv /tmp/nvim.appimage /usr/local/bin/nvim
                 ok
@@ -180,7 +186,7 @@ install_linux_deps() {
                 step "installing lazygit"
                 local lg_ver
                 lg_ver=$(curl -s https://api.github.com/repos/jesseduffield/lazygit/releases/latest | grep tag_name | cut -d '"' -f4)
-                curl -Lo /tmp/lazygit.tar.gz "https://github.com/jesseduffield/lazygit/releases/download/${lg_ver}/lazygit_${lg_ver#v}_Linux_x86_64.tar.gz"
+                curl -Lo /tmp/lazygit.tar.gz "https://github.com/jesseduffield/lazygit/releases/download/${lg_ver}/lazygit_${lg_ver#v}_Linux_${ARCH}.tar.gz"
                 tar xf /tmp/lazygit.tar.gz -C /tmp lazygit
                 sudo mv /tmp/lazygit /usr/local/bin/lazygit
                 ok
@@ -229,9 +235,9 @@ install_linux_deps() {
                 step "installing peco"
                 local peco_ver
                 peco_ver=$(curl -s https://api.github.com/repos/peco/peco/releases/latest | grep tag_name | cut -d '"' -f4)
-                curl -Lo /tmp/peco.tar.gz "https://github.com/peco/peco/releases/download/${peco_ver}/peco_linux_amd64.tar.gz"
+                curl -Lo /tmp/peco.tar.gz "https://github.com/peco/peco/releases/download/${peco_ver}/peco_linux_${ARCH_ALT}.tar.gz"
                 tar xf /tmp/peco.tar.gz -C /tmp
-                sudo mv /tmp/peco_linux_amd64/peco /usr/local/bin/peco
+                sudo mv "/tmp/peco_linux_${ARCH_ALT}/peco" /usr/local/bin/peco
                 ok
             fi
             ;;
