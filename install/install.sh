@@ -344,7 +344,14 @@ post_install() {
         info "fzf zsh integration ready"
     fi
 
-    # tmux plugin manager — already bundled in dotfiles
+    # tmux plugin manager (TPM)
+    if [ -d ~/.tmux/plugins/tpm ]; then
+        info "TPM already installed"
+    else
+        step "installing TPM"
+        git clone --depth 1 https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
+        ok
+    fi
 
     echo ""
     echo "  ┌─────────────────────────────────────────────────────────┐"
