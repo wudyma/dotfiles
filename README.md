@@ -2,6 +2,27 @@
 
 This is the repo to store all my dotfiles and personal configs. It is forked and modified from [Takuya's dotfiles](https://github.com/craftzdog/dotfiles-public).
 
+## Install
+
+Clone the repo and run the install script:
+
+**Linux & macOS:**
+
+```bash
+git clone https://github.com/zhengmao/dotfiles.git ~/.dotfiles
+cd ~/.dotfiles && ./install/install.sh
+```
+
+**Windows (PowerShell 7+):**
+
+```powershell
+git clone https://github.com/zhengmao/dotfiles.git $env:USERPROFILE\.dotfiles
+cd $env:USERPROFILE\.dotfiles
+.\install\install.ps1
+```
+
+The install script symlinks config files into place and installs dependencies via the system package manager (Homebrew on macOS, apt on Linux, winget on Windows).
+
 ## Contents
 
 - vim (Neovim)
