@@ -17,7 +17,7 @@ export http_proxy=$https_proxy
 
 # Claude Code
 export ANTHROPIC_BASE_URL=https://api.deepseek.com/anthropic
-export ANTHROPIC_AUTH_TOKEN=sk-b030f8a0206a49849fe28f719db93106
+export ANTHROPIC_AUTH_TOKEN=
 export ANTHROPIC_MODEL=deepseek-v4-pro[1m]
 export ANTHROPIC_DEFAULT_OPUS_MODEL=deepseek-v4-pro[1m]
 export ANTHROPIC_DEFAULT_SONNET_MODEL=deepseek-v4-pro[1m]
