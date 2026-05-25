@@ -4,21 +4,18 @@ github-copilot
 lazy*.json
 _*
 
-# Fish local config
-.config/fish/fish_variables
-
 # Tmux
-.config/tmux/plugins
+config/tmux/plugins
 
 # Lazygit
-.config/lazygit/state.yml
-.config/nvim/lazy-lock.json
-.config/nvim/lazyvim.json
+config/lazygit/state.yml
+config/nvim/lazy-lock.json
+config/nvim/lazyvim.json
 
 # Zed
-.config/zed/.tmp*
-.config/zed/embeddings
-.config/zed/prompts
+config/zed/.tmp*
+config/zed/embeddings
+config/zed/prompts
 
 # Claude Code
 .claude/*.local.json
