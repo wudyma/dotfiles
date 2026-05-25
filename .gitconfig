@@ -39,8 +39,5 @@
 [user]
   name = Zheng Ma
   email = mazhengcn@outlook.com
-[credential]
-	helper =
-	helper = /usr/local/share/gcm-core/git-credential-manager
-[credential "https://gitee.com"]
-	provider = generic
+[url "git@github.com:"]
+	insteadOf = https://github.com/
