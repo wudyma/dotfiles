@@ -41,3 +41,5 @@
   email = mazhengcn@outlook.com
 [url "git@github.com:"]
 	insteadOf = https://github.com/
+[url "git@gitee.com:"]
+	insteadOf = https://gitee.com/
