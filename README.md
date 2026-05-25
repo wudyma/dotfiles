@@ -9,14 +9,14 @@ Clone the repo and run the install script:
 **Linux & macOS:**
 
 ```bash
-git clone https://github.com/zhengmao/dotfiles.git ~/.dotfiles
+git clone https://github.com/mazhengcn/dotfiles.git ~/.dotfiles
 cd ~/.dotfiles && ./install/install.sh
 ```
 
 **Windows (PowerShell 7+):**
 
 ```powershell
-git clone https://github.com/zhengmao/dotfiles.git $env:USERPROFILE\.dotfiles
+git clone https://github.com/mazhengcn/dotfiles.git $env:USERPROFILE\.dotfiles
 cd $env:USERPROFILE\.dotfiles
 .\install\install.ps1
 ```
@@ -25,12 +25,21 @@ The install script symlinks config files into place and installs dependencies vi
 
 ## Contents
 
-- vim (Neovim)
-- tmux
+- Neovim (lazyVim)
+- tmux (Catppuccin theme, TPM plugins)
 - git
-- zsh
+- starship
+- lazygit
 - PowerShell
 - zed
+
+## Tmux
+
+- Prefix key: `Ctrl-t`
+- Theme: [Catppuccin Mocha](https://github.com/catppuccin/tmux)
+- Plugins managed via [TPM](https://github.com/tmux-plugins/tpm): `tmux-pain-control`, `tmux-battery`, `tmux-cpu`, `tmux-online-status`
+- `prefix + g` — open lazygit in a popup
+- `prefix + y` — open Claude Code in a popup (reuses session per directory)
 
 ## Neovim setup
 
