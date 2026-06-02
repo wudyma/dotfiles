@@ -1,0 +1,16 @@
+term = xterm-256color
+
+# theme = TokyoNight Night
+theme = Github Dark Default
+
+font-family = Maple Mono NF CN
+font-size = 16
+
+background-opacity = 0.9
+background-blur = true
+
+macos-titlebar-style = transparent
+
+window-padding-x = 8
+window-padding-y = 8
+window-padding-balance = true
