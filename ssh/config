@@ -1,35 +1,6 @@
-Host spark
-    HostName spark.wudy-mars.top
-    User zheng
-    Port 11022
+# vim: set ft=sshconfig:
 
-Host office
-    HostName 202.120.13.209
-    User zheng
-
-Host think-station
-    HostName 111.186.40.70
-    User zheng
-
-Host *.zylab
-    HostName zylab.asuscomm.com
-    User root
-    UserKnownHostsFile /dev/null
-    StrictHostKeyChecking off
-    ForwardAgent yes
-
-Host zylab-data
-    HostName 111.186.40.70
-    User zylab-data
-    Port 5698
-
-Host pi-sjtu
-    HostName pilogin.hpc.sjtu.edu.cn
-    User zhengma
-
-Host sy-sjtu
-    HostName sylogin.hpc.sjtu.edu.cn
-    User zhengma
+Include config.d/*
 
 # GitHub - optimized for git operations
 Host github.com
@@ -40,7 +11,7 @@ Host github.com
 	# Shorter persist time since git operations are quick
 
 # Homelab - optimized for interactive sessions
-Host *.wudy-mars.top
+Host *.wudy-mars.top 192.168.1.*
 	ControlMaster auto
 	ControlPath ~/.ssh/control/%r@%h:%p
 	ControlPersist 3600
