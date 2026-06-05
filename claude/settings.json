@@ -1,10 +1,8 @@
 {
   "$schema": "https://json.schemastore.org/claude-code-settings.json",
-  "tui": "fullscreen",
-  "theme": "auto",
+  "apiKeyHelper": "~/.claude/api-key.sh",
   "env": {
     "ANTHROPIC_BASE_URL": "https://api.deepseek.com/anthropic",
-    "ANTHROPIC_AUTH_TOKEN": "",
     "ANTHROPIC_MODEL": "deepseek-v4-pro[1m]",
     "ANTHROPIC_DEFAULT_OPUS_MODEL": "deepseek-v4-pro[1m]",
     "ANTHROPIC_DEFAULT_SONNET_MODEL": "deepseek-v4-pro[1m]",
@@ -14,7 +12,7 @@
   },
   "statusLine": {
     "type": "command",
-    "command": "/home/zheng/.claude/statusline.sh"
+    "command": "~/.claude/statusline.sh"
   },
   "tui": "fullscreen",
   "theme": "auto"
