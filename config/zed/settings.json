@@ -12,6 +12,9 @@
       "enabled": true,
     },
   },
+  // Theme
+  "theme": "Catppuccin Espresso (Blur)",
+  "icon_theme": "Catppuccin Mocha",
   // Typography
   "buffer_font_family": "Maple Mono NF CN",
   "buffer_font_size": 16,
@@ -26,4 +29,8 @@
     "calt": true,
   },
   "agent_buffer_font_size": 16,
+  "auto_install_extensions": {
+    "catppuccin-blur": true,
+    "catppuccin-icons": true,
+  },
 }
