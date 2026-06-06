@@ -47,5 +47,7 @@ Set-Alias ll eza_ll
 Set-Alias lla eza_lla
 Set-Alias vim nvim
 
-# Invoke-Expression (&starship init powershell)
+# Point starship at the Windows-compatible config
+$env:STARSHIP_CONFIG = "$env:USERPROFILE\.config\starship_windows.toml"
+Invoke-Expression (&starship init powershell)
 Invoke-Expression (& { (zoxide init powershell | Out-String) })
