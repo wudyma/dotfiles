@@ -116,6 +116,7 @@ alias lla="ll -a"
 alias vim="nvim"
 
 # Source local secrets (API keys, proxies, etc.) — gitignored
+# The install script copies zsh/.zshrc.{macos,linux} → ~/.zshrc.local
 [ -f ~/.zshrc.local ] && source ~/.zshrc.local
 
 # Initialize zoxide and starship

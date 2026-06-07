@@ -56,8 +56,6 @@ function Assert-Winget {
         Write-Info "winget available"
         return
     }
-    # winget ships with App Installer on Win 10 1809+ / Win 11
-    # Try installing via Microsoft Store
     Write-Warn "winget not found. Install 'App Installer' from the Microsoft Store, then re-run."
     Write-Info "Alternatively: https://github.com/microsoft/winget-cli/releases"
     exit 1
@@ -73,6 +71,7 @@ function Install-Packages {
         @{ id = "Neovim.Neovim"; name = "neovim" }
         @{ id = "OpenJS.NodeJS"; name = "node" }
         @{ id = "Microsoft.VisualStudioCode"; name = "vscode" }
+        @{ id = "Zed.Zed"; name = "zed" }
         # CLI tools
         @{ id = "JesseDuffield.lazygit"; name = "lazygit" }
         @{ id = "eza-community.eza"; name = "eza" }
@@ -83,9 +82,12 @@ function Install-Packages {
         @{ id = "sharkdp.fd"; name = "fd" }
         @{ id = "BurntSushi.ripgrep.MSVC"; name = "ripgrep" }
         @{ id = "x-motemen.ghq"; name = "ghq" }
+        @{ id = "jqlang.jq"; name = "jq" }
         # Terminal / shell
         @{ id = "Microsoft.PowerShell"; name = "pwsh" }
         @{ id = "Microsoft.WindowsTerminal"; name = "windows-terminal" }
+        # File manager
+        @{ id = "sxyazi.yazi"; name = "yazi" }
     )
 
     foreach ($pkg in $packages) {
@@ -129,40 +131,97 @@ function Install-ManualTools {
     } else {
         Write-Info "peco already installed"
     }
+
+    # bun — fast JS runtime
+    if (-not (Get-Command bun -ErrorAction SilentlyContinue)) {
+        Write-Step "installing bun"
+        if (-not $DryRun) {
+            powershell -c "irm bun.sh/install.ps1 | iex"
+            Write-Ok
+        }
+    } else {
+        Write-Info "bun already installed"
+    }
+
+    # uv — fast Python package manager
+    if (-not (Get-Command uv -ErrorAction SilentlyContinue)) {
+        Write-Step "installing uv"
+        if (-not $DryRun) {
+            powershell -c "irm astral.sh/uv/install.ps1 | iex"
+            Write-Ok
+        }
+    } else {
+        Write-Info "uv already installed"
+    }
+}
+
+# ─── recommended tools ───────────────────────────────────────────────────────
+function Install-RecommendedTools {
+    Write-Header "Installing recommended CLI tools"
+
+    $recs = @(
+        @{ id = "dandavison.delta"; name = "delta (git diff viewer)" }
+        @{ id = "bootandy.dust"; name = "dust (disk usage)" }
+        @{ id = "Clement.bottom"; name = "bottom (system monitor)" }
+        @{ id = "ducaale.xh"; name = "xh (HTTP client)" }
+    )
+
+    foreach ($pkg in $recs) {
+        Write-Step "winget install $($pkg.name)"
+        if ($DryRun) {
+            Write-Info "[dry-run] winget install --id $($pkg.id)"
+            continue
+        }
+        $installed = winget list --id $($pkg.id) --exact 2>$null
+        if ($LASTEXITCODE -eq 0) {
+            Write-Info "$($pkg.name) already installed"
+        } else {
+            winget install --id $($pkg.id) --exact --silent --accept-package-agreements --accept-source-agreements
+            if ($LASTEXITCODE -ne 0) {
+                Write-Warn "failed to install $($pkg.name) — continuing"
+            } else {
+                Write-Ok
+            }
+        }
+    }
 }
 
 # ─── Nerd Font ───────────────────────────────────────────────────────────────
 function Install-NerdFont {
     if ($NoFonts) { Write-Info "skipping fonts (--NoFonts)"; return }
-    Write-Header "Installing JetBrains Mono Nerd Font"
+    Write-Header "Installing Maple Mono NF CN (Nerd Font with Chinese)"
 
-    $fontName = "JetBrainsMono Nerd Font"
-    $regPath = "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Fonts"
-    if (Get-ItemProperty -Path $regPath -Name "$fontName (TrueType)" -ErrorAction SilentlyContinue) {
-        Write-Info "JetBrains Mono Nerd Font already installed"
+    $userFontDir = "$env:LOCALAPPDATA\Microsoft\Windows\Fonts"
+    if (-not (Test-Path $userFontDir)) { New-Item -ItemType Directory $userFontDir -Force | Out-Null }
+
+    if (Get-ChildItem $userFontDir -Filter "MapleMono*" -ErrorAction SilentlyContinue) {
+        Write-Info "Maple Mono NF CN already installed"
         return
     }
 
-    Write-Step "downloading JetBrainsMono.zip"
+    Write-Step "downloading MapleMono-NF-CN.zip"
     if (-not $DryRun) {
-        $zip = "$env:TEMP\JetBrainsMono.zip"
-        Invoke-WebRequest "https://github.com/ryanoasis/nerd-fonts/releases/latest/download/JetBrainsMono.zip" -OutFile $zip
-        $fontDir = "$env:TEMP\JetBrainsMono"
+        $zip = "$env:TEMP\MapleMono-NF-CN.zip"
+        try {
+            Invoke-WebRequest "https://github.com/subframe7536/maple-font/releases/latest/download/MapleMono-NF-CN.zip" -OutFile $zip
+        } catch {
+            Write-Warn "failed to download Maple Mono; falling back to JetBrains Mono"
+            Invoke-WebRequest "https://github.com/ryanoasis/nerd-fonts/releases/latest/download/JetBrainsMono.zip" -OutFile $zip
+        }
+        $fontDir = "$env:TEMP\MapleMonoFont"
         Expand-Archive $zip -DestinationPath $fontDir -Force
 
-        # Install per-user
-        $userFontDir = "$env:LOCALAPPDATA\Microsoft\Windows\Fonts"
-        if (-not (Test-Path $userFontDir)) { New-Item -ItemType Directory $userFontDir -Force | Out-Null }
-        Get-ChildItem $fontDir -Filter "*.ttf" | ForEach-Object {
+        Get-ChildItem $fontDir -Filter "*.ttf" -Recurse | ForEach-Object {
             Copy-Item $_.FullName $userFontDir -Force
         }
         # Register fonts
-        Get-ChildItem $userFontDir -Filter "JetBrainsMono*.ttf" | ForEach-Object {
+        Get-ChildItem $userFontDir -Filter "MapleMono*.ttf" | ForEach-Object {
             $fontFile = $_.Name
             New-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Fonts" `
                 -Name $fontFile -Value $_.FullName -PropertyType String -Force | Out-Null
         }
-        Remove-Item $zip; Remove-Item $fontDir -Recurse -Force
+        Remove-Item $zip -ErrorAction SilentlyContinue
+        Remove-Item $fontDir -Recurse -Force -ErrorAction SilentlyContinue
         Write-Ok
     }
 }
@@ -173,7 +232,7 @@ function Link-Dotfiles {
 
     $home = $env:USERPROFILE
 
-    # git config — copy (git on Windows sometimes has trouble with symlinks)
+    # Git config — copy (git on Windows sometimes has trouble with symlinks)
     $gitSrc = Join-Path $DotfilesDir ".gitconfig"
     $gitDst = Join-Path $home ".gitconfig"
     if ($DryRun) {
@@ -184,26 +243,45 @@ function Link-Dotfiles {
         Write-Ok
     }
 
+    # SSH config
+    $sshSrc = Join-Path $DotfilesDir "ssh\config"
+    $sshDst = Join-Path $home ".ssh\config"
+    Symlink-File $sshSrc $sshDst
+
     # PowerShell profile
     $pwshProfileDst = Join-Path $home "Documents\PowerShell\Microsoft.PowerShell_profile.ps1"
-    $pwshProfileSrc = Join-Path $DotfilesDir ".config\powershell\Microsoft.PowerShell_profile.ps1"
+    $pwshProfileSrc = Join-Path $DotfilesDir "config\powershell\Microsoft.PowerShell_profile.ps1"
     Symlink-File $pwshProfileSrc $pwshProfileDst
 
-    # PowerShell config dirs
-    $nvimSrc  = Join-Path $DotfilesDir ".config\nvim"
+    # Neovim (AppData\Local\nvim on Windows)
+    $nvimSrc  = Join-Path $DotfilesDir "config\nvim"
     $nvimDst  = Join-Path $home "AppData\Local\nvim"
     Symlink-File $nvimSrc $nvimDst
 
-    $lazygitSrc = Join-Path $DotfilesDir ".config\lazygit"
-    $lazygitDst = Join-Path $home "AppData\Local\lazygit"
-    Symlink-File $lazygitSrc $lazygitDst
-
-    $zedSrc = Join-Path $DotfilesDir ".config\zed"
+    # Zed
+    $zedSrc = Join-Path $DotfilesDir "config\zed"
     $zedDst = Join-Path $home ".config\zed"
     Symlink-File $zedSrc $zedDst
 
-    # starship config goes in ~/.config
-    Write-Info "Note: starship config is handled by starship.toml if present"
+    # Starship
+    $starshipSrc = Join-Path $DotfilesDir "config\starship_windows.toml"
+    $starshipDst = Join-Path $home ".config\starship.toml"
+    Symlink-File $starshipSrc $starshipDst
+
+    # Windows Terminal (copy to LocalState, not symlink — Terminal expects it there)
+    $wtSrc = Join-Path $DotfilesDir "config\windows_terminal\settings.json"
+    $wtDst = Join-Path $home "AppData\Local\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState\settings.json"
+    if (Test-Path (Split-Path $wtDst -Parent)) {
+        Write-Step "copying Windows Terminal settings"
+        if (-not $DryRun) { Copy-Item $wtSrc $wtDst -Force; Write-Ok }
+    } else {
+        Write-Info "Windows Terminal package dir not found; skipping settings.json"
+    }
+
+    # Yazi file manager
+    $yaziSrc = Join-Path $DotfilesDir "config\yazi"
+    $yaziDst = Join-Path $home "AppData\Roaming\yazi\config"
+    Symlink-File $yaziSrc $yaziDst
 }
 
 # ─── post-install ────────────────────────────────────────────────────────────
@@ -222,7 +300,8 @@ function Write-PostInstall {
     Write-Host "  │  • Restart your terminal                                │"
     Write-Host "  │  • In nvim: :Lazy sync to install plugins               │"
     Write-Host "  │  • Set Windows Terminal font to:                        │"
-    Write-Host "  │      JetBrainsMono Nerd Font                            │"
+    Write-Host "  │      Maple Mono NF CN                                    │"
+    Write-Host "  │  • Try new tools: yazi (file manager), delta (git diff) │"
     Write-Host "  └─────────────────────────────────────────────────────────┘"
     Write-Host ""
 }
@@ -236,6 +315,7 @@ function Main {
     Assert-Winget
     Install-Packages
     Install-ManualTools
+    Install-RecommendedTools
     Install-NerdFont
     Link-Dotfiles
     Write-PostInstall
