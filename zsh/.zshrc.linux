@@ -1,0 +1,25 @@
+# Alias
+alias cat = "batcat"
+
+# bun
+export BUN_INSTALL="$HOME/.bun"
+export PATH="$BUN_INSTALL/bin:$PATH"
+
+# rust
+export PATH="$HOME/.cargo/bin:$PATH"
+
+# nvm
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"                   # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion" # This loads nvm bash_completion
+
+# texlive
+export PATH="$HOME/.local/texlive/2026/bin/aarch64-linux:$PATH"
+
+# Proxies
+export https_proxy="http://192.168.1.5:8234"
+export http_proxy=$https_proxy
+
+# K3S
+export KUBECONFIG="$HOME/.config/k3s/k3s.yaml"
+alias k="kubectl"

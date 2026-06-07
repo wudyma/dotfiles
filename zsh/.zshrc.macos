@@ -1,0 +1,7 @@
+# Alias
+alias cat="bat"
+
+export EZA_CONFIG_DIR="$HOME/.config/eza"
+
+export https_proxy=""
+export http_proxy=$https_proxy

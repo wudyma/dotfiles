@@ -70,7 +70,7 @@ DISABLE_UNTRACKED_FILES_DIRTY="true"
 # Custom plugins may be added to $ZSH_CUSTOM/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(git docker extract copypath copyfile web-search zsh-autosuggestions zsh-syntax-highlighting)
+plugins=(git extract copypath copyfile web-search zsh-autosuggestions zsh-syntax-highlighting)
 
 # Auto-install oh-my-zsh if not present
 if [ ! -d "$ZSH" ]; then
@@ -113,12 +113,7 @@ alias ls="eza"
 alias la="ls -a"
 alias ll="ls -l"
 alias lla="ll -a"
-# alias cat="bat"
-alias cat="batcat"
 alias vim="nvim"
-
-# Initialize fzf
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
 # Source local secrets (API keys, proxies, etc.) — gitignored
 [ -f ~/.zshrc.local ] && source ~/.zshrc.local
