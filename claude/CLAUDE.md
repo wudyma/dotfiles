@@ -46,14 +46,15 @@ Both `uv` and `bun` are currently installed. If either is missing at runtime:
 ```
 ~/.dotfiles/
   claude/           # Claude Code config (this directory)
-    settings.json   # Claude Code settings
+    settings.json   # Claude Code settings (Starship native statusline)
     CLAUDE.md       # You are here
-  .zshrc            # Shell config (symlinked to ~/.zshrc)
+  zsh/              # Shell config (symlinked to ~/)
   config/
     ghostty/        # Ghostty terminal config
-    lazygit/        # Lazygit config
+    nvim/           # Neovim (LazyVim)
+    tmux/           # tmux + TPM plugins
     zed/            # Zed editor config
-  scripts/          # Shell helper scripts
+    starship.toml   # Starship prompt
 ```
 
 ## When modifying settings.json
@@ -61,3 +62,4 @@ Both `uv` and `bun` are currently installed. If either is missing at runtime:
 - This repo's `settings.json` mirrors `~/.claude/settings.json`
 - Changes here should be committed and pushed as dotfiles changes
 - Use the `update-config` skill if the user asks to modify Claude Code configuration
+- The statusline uses Starship's native `claude-code` module — configure via `starship.toml`
