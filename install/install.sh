@@ -1,6 +1,12 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+DRY_RUN=false
+if [ "${1:-}" = "--dry-run" ] || [ "${1:-}" = "-n" ]; then
+    DRY_RUN=true
+    echo "==> Dry-run mode — no changes will be made"
+fi
+
 DOTFILES_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 
 # ─── detect OS ───────────────────────────────────────────────────────────────
@@ -26,21 +32,24 @@ info()    { printf '    \033[37m%s\033[0m\n' "$*"; }
 warn()    { printf '    \033[33m⚠ %s\033[0m\n' "$*"; }
 err()     { printf '    \033[31m✗ %s\033[0m\n' "$*"; }
 
+# In dry-run mode, print what would be done and skip the actual command
+maybe() { if $DRY_RUN; then info "[dry-run] $*"; else eval "$@"; fi }
+
 symlink() {
     local src="$1" dst="$2"
     if [ -L "$dst" ] && [ "$(readlink "$dst")" = "$src" ]; then
         info "already linked: $dst"
     elif [ -L "$dst" ]; then
         info "re-link $dst → $src"
-        ln -sf "$src" "$dst"
+        $DRY_RUN || ln -sf "$src" "$dst"
         ok
     elif [ -e "$dst" ]; then
         warn "$dst exists (not a symlink to dotfiles), backing up → ${dst}.bak"
-        mv "$dst" "${dst}.bak"
-        ln -s "$src" "$dst"
+        $DRY_RUN || mv "$dst" "${dst}.bak"
+        $DRY_RUN || ln -s "$src" "$dst"
         ok
     else
-        ln -s "$src" "$dst"
+        $DRY_RUN || ln -s "$src" "$dst"
         ok
     fi
 }
@@ -88,6 +97,10 @@ ensure_linux_pkg_manager() {
 
 # ─── macOS ───────────────────────────────────────────────────────────────────
 install_macos_deps() {
+    if $DRY_RUN; then
+        info "[dry-run] would install macOS packages via Homebrew"
+        return
+    fi
     ensure_homebrew
 
     header "Installing packages via Homebrew"
@@ -121,6 +134,12 @@ install_macos_deps() {
         brew install ghostty || warn "failed to install ghostty"
     fi
 
+    # gh — GitHub CLI (used by git open alias)
+    if ! command -v gh &>/dev/null; then
+        step "brew install gh"
+        brew install gh || warn "failed to install gh"
+    fi
+
     # zed — editor (config included)
     if ! command -v zed &>/dev/null; then
         step "brew install zed"
@@ -144,10 +163,24 @@ install_macos_deps() {
         step "installing uv"
         curl -LsSf https://astral.sh/uv/install.sh | sh || warn "failed to install uv"
     fi
+
+    # claude — Claude Code CLI (tmux popup binding)
+    if ! command -v claude &>/dev/null; then
+        step "installing Claude Code CLI"
+        if command -v bun &>/dev/null; then
+            bun add -g @anthropic-ai/claude-code || warn "failed to install claude"
+        else
+            npm install -g @anthropic-ai/claude-code || warn "failed to install claude"
+        fi
+    fi
 }
 
 # ─── Linux ───────────────────────────────────────────────────────────────────
 install_linux_deps() {
+    if $DRY_RUN; then
+        info "[dry-run] would install Linux packages"
+        return
+    fi
     ensure_linux_pkg_manager
 
     # Prefer Homebrew on Linux if available for fresher packages
@@ -169,6 +202,7 @@ install_linux_deps() {
             yazi
             ghostty
             zed
+            gh
             node
             gcc
         )
@@ -187,6 +221,15 @@ install_linux_deps() {
             step "installing uv"
             curl -LsSf https://astral.sh/uv/install.sh | sh || warn "failed to install uv"
         fi
+        # claude
+        if ! command -v claude &>/dev/null; then
+            step "installing Claude Code CLI"
+            if command -v bun &>/dev/null; then
+                bun add -g @anthropic-ai/claude-code || warn "failed to install claude"
+            else
+                npm install -g @anthropic-ai/claude-code || warn "failed to install claude"
+            fi
+        fi
         return
     fi
 
@@ -197,7 +240,7 @@ install_linux_deps() {
     case "$PKG_MGR" in
         apt)
             sudo apt-get install -y build-essential curl wget unzip \
-                git tmux zsh jq
+                git tmux zsh jq gh
 
             # Neovim — prefer appimage or manual install for freshness
             if ! command -v nvim &>/dev/null; then
@@ -328,7 +371,7 @@ install_linux_deps() {
 
         dnf)
             sudo dnf install -y @development-tools curl wget unzip \
-                git tmux zsh neovim jq fzf fd-find ripgrep
+                git tmux zsh neovim jq gh fzf fd-find ripgrep
 
             # eza
             if ! command -v eza &>/dev/null; then
@@ -393,7 +436,7 @@ install_linux_deps() {
 
         pacman)
             sudo pacman -S --noconfirm base-devel curl wget unzip \
-                git tmux zsh neovim jq lazygit eza bat starship \
+                git tmux zsh neovim jq gh lazygit eza bat starship \
                 zoxide fzf fd ripgrep ghq peco yazi ghostty zed nodejs
             ;;
     esac
@@ -409,10 +452,24 @@ install_linux_deps() {
         step "installing uv"
         curl -LsSf https://astral.sh/uv/install.sh | sh || warn "failed to install uv"
     fi
+
+    # claude (all Linux variants)
+    if ! command -v claude &>/dev/null; then
+        step "installing Claude Code CLI"
+        if command -v bun &>/dev/null; then
+            bun add -g @anthropic-ai/claude-code || warn "failed to install claude"
+        else
+            npm install -g @anthropic-ai/claude-code || warn "failed to install claude"
+        fi
+    fi
 }
 
 # ─── optional recommended tools ──────────────────────────────────────────────
 install_recommended_tools() {
+    if $DRY_RUN; then
+        info "[dry-run] would install recommended CLI tools"
+        return
+    fi
     header "Installing recommended CLI tools"
 
     local recs=()
@@ -467,6 +524,10 @@ install_recommended_tools() {
 
 # ─── Nerd Font ───────────────────────────────────────────────────────────────
 install_nerd_font() {
+    if $DRY_RUN; then
+        info "[dry-run] would install Maple Mono NF CN font"
+        return
+    fi
     if [ -d ~/.local/share/fonts ] && ls ~/.local/share/fonts/MapleMono* &>/dev/null 2>&1; then
         info "Maple Mono NF CN already installed"
         return
@@ -520,10 +581,14 @@ link_dotfiles() {
     # Platform-specific template → ~/.zshrc.local (sourced by .zshrc)
     # Only copy if ~/.zshrc.local doesn't already exist (preserve user edits)
     if [ ! -f ~/.zshrc.local ]; then
-        case "$OS" in
-            macos) cp "$DOTFILES_DIR/zsh/.zshrc.macos" ~/.zshrc.local ; info "~/.zshrc.local created from macOS template" ;;
-            linux) cp "$DOTFILES_DIR/zsh/.zshrc.linux" ~/.zshrc.local ; info "~/.zshrc.local created from Linux template" ;;
-        esac
+        if $DRY_RUN; then
+            info "[dry-run] would create ~/.zshrc.local from $OS template"
+        else
+            case "$OS" in
+                macos) cp "$DOTFILES_DIR/zsh/.zshrc.macos" ~/.zshrc.local ; info "~/.zshrc.local created from macOS template" ;;
+                linux) cp "$DOTFILES_DIR/zsh/.zshrc.linux" ~/.zshrc.local ; info "~/.zshrc.local created from Linux template" ;;
+            esac
+        fi
     else
         info "~/.zshrc.local already exists — keeping your version"
     fi
@@ -557,11 +622,8 @@ link_dotfiles() {
 post_install() {
     header "Post-install setup"
 
-    # Ensure ~/.local/bin is in PATH
-    mkdir -p ~/.local/bin
-
     # ghq root
-    mkdir -p ~/repos
+    maybe "mkdir -p ~/repos"
 
     # fzf key bindings for zsh
     if [ -f ~/.fzf.zsh ]; then
@@ -573,7 +635,7 @@ post_install() {
         info "TPM already installed"
     else
         step "installing TPM"
-        git clone --depth 1 https://github.com/tmux-plugins/tpm ~/.config/tmux/plugins/tpm
+        maybe "git clone --depth 1 https://github.com/tmux-plugins/tpm ~/.config/tmux/plugins/tpm"
         ok
     fi
 
@@ -594,6 +656,9 @@ post_install() {
 main() {
     detect_os
     header "Installing dotfiles for $OS"
+
+    # Ensure local bin dirs exist early (tools may symlink into them)
+    mkdir -p ~/bin ~/.local/bin
 
     case "$OS" in
         macos) install_macos_deps ;;

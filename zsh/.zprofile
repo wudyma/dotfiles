@@ -1,4 +1,4 @@
-# ── OS detection & platform-specific setup ──────────────────────────
+# ── OS detection & Homebrew setup ────────────────────────────────────
 case "$(uname -s)" in
   Darwin)
     # Install Homebrew if not present, then set PATH
@@ -12,10 +12,5 @@ case "$(uname -s)" in
     elif [ -f /usr/local/bin/brew ]; then
       eval "$(/usr/local/bin/brew shellenv)"
     fi
-  #   # Source macOS-specific config
-  #   [ -f "${ZDOTDIR:-$HOME}/.dotfiles/zsh/.zshrc.macos" ] && source "${ZDOTDIR:-$HOME}/.dotfiles/zsh/.zshrc.macos"
-  #   ;;
-  # Linux)
-  #   [ -f "${ZDOTDIR:-$HOME}/.dotfiles/zsh/.zshrc.linux" ] && source "${ZDOTDIR:-$HOME}/.dotfiles/zsh/.zshrc.linux"
     ;;
 esac

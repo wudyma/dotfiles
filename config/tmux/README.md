@@ -16,7 +16,7 @@
 | `C-S-Left` | no prefix | Swap window one position left, then switch to it |
 | `C-S-Right` | no prefix | Swap window one position right, then switch to it |
 
-### Applications (utility.conf)
+### Applications (tmux.conf)
 
 | Binding | Scope | Description |
 |---------|-------|-------------|

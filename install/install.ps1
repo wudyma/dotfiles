@@ -68,6 +68,7 @@ function Install-Packages {
     $packages = @(
         # Development
         @{ id = "Git.Git"; name = "git" }
+        @{ id = "GitHub.cli"; name = "gh" }
         @{ id = "Neovim.Neovim"; name = "neovim" }
         @{ id = "OpenJS.NodeJS"; name = "node" }
         @{ id = "Microsoft.VisualStudioCode"; name = "vscode" }
@@ -152,6 +153,21 @@ function Install-ManualTools {
         }
     } else {
         Write-Info "uv already installed"
+    }
+
+    # claude — Claude Code CLI (tmux popup binding)
+    if (-not (Get-Command claude -ErrorAction SilentlyContinue)) {
+        Write-Step "installing Claude Code CLI"
+        if (-not $DryRun) {
+            if (Get-Command bun -ErrorAction SilentlyContinue) {
+                bun add -g @anthropic-ai/claude-code
+            } else {
+                npm install -g @anthropic-ai/claude-code
+            }
+            Write-Ok
+        }
+    } else {
+        Write-Info "claude already installed"
     }
 }
 

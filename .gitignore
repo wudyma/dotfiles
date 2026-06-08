@@ -1,59 +1,42 @@
-# folders
+# SSH — only track the .gitkeep
 ssh/config.d/*
 !ssh/config.d/.gitkeep
-gh
-github-copilot
-lazy*.json
-_*
 
-# Tmux
+# Config state files (generated, not tracked)
 config/tmux/plugins
-
-# Lazygit
-config/lazygit/state.yml
 config/nvim/lazy-lock.json
 config/nvim/lazyvim.json
-
-# Zed
 config/zed/.tmp*
 config/zed/embeddings
 config/zed/prompts
 
-# Claude Code
+# Claude Code — local overrides
 .claude/*.local.json
 
-# Vim
-Session.vim
-.vim/bundle/
-.vimrc_sample
-.vim/ftdetect/Dockerfile.vim
-.vim/syntax/Dockerfile.vim
-.vim/snippets/
-.luarc.json
+# Secrets & local config
+.zshrc.local
+.python-version
 
+# OS junk
+.DS_Store
+*.sw[po]
 *.o
+
+# Editor temp files
 \#*#
 *#
 .#*
 .*~
 *~
-.DS_Store
-*.sw[po]
+Session.vim
+.netrwhist
+
+# Tags
 tags
 TAGS
-.svn
+
+# Misc
 *.dSYM
 *.log
-*.dvi
-*.aux
-*.elc
-.zshrc.local
-.python-version
-samples
-.netrwhist
-.bundle
-/vendor/bundle
-Gemfile.lock
+.svn
 node_modules
-bower_components
-fishd.*
