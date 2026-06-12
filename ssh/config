@@ -48,7 +48,7 @@ Host *
 	Compression yes
 
 	# Reuse SSH agent socket
-	AddKeysToAgent yes
+	# AddKeysToAgent yes
 
 	# Hash known_hosts for privacy
 	HashKnownHosts yes
