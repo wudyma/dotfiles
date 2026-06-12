@@ -1,7 +1,6 @@
 term = xterm-256color
 
-# theme = TokyoNight Night
-theme = Github Dark Default
+theme = TokyoNight Night
 
 font-family = Maple Mono NF CN
 font-size = 18
