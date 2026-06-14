@@ -5,7 +5,7 @@ theme = Ultra Dark
 font-family = Maple Mono NF CN
 font-size = 18
 
-background-opacity = 0.8
+background-opacity = 0.9
 background-blur = true
 
 cursor-style = block
@@ -14,7 +14,7 @@ cursor-color = cell-foreground
 cursor-text = cell-background
 shell-integration-features = no-cursor
 
-macos-titlebar-style = hidden
+macos-titlebar-style = transparent
 macos-option-as-alt = true
 
 window-padding-x = 8
