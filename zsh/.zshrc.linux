@@ -17,7 +17,7 @@ export NVM_DIR="$HOME/.nvm"
 export PATH="$HOME/.local/texlive/2026/bin/aarch64-linux:$PATH"
 
 # Proxies
-export https_proxy="http://192.168.1.5:8234"
+export https_proxy=""
 export http_proxy=$https_proxy
 
 # K3S
