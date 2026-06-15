@@ -11,6 +11,17 @@ return {
     },
   },
   {
+    "catppuccin/nvim",
+    name = "catppuccin",
+    priority = 1000,
+    opts = {
+      transparent_background = true,
+      float = {
+        transparent = true,
+      },
+    },
+  },
+  {
     "projekt0n/github-nvim-theme",
     name = "github-theme",
     lazy = true, -- make sure we load this during startup if it is your main colorscheme
@@ -19,7 +30,7 @@ return {
   {
     "LazyVim/LazyVim",
     opts = {
-      colorscheme = "tokyonight",
+      colorscheme = "catppuccin-nvim",
     },
   },
 }
