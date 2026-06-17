@@ -10,22 +10,3 @@ else if test -f /usr/local/bin/brew
 else
     echo "⚠  Homebrew not found. Run the zsh bootstrap (~/.zprofile) first." >&2
 end
-
-# ── eza ──────────────────────────────────────────────────────────────
-if type -q eza
-    alias ll "eza -l -g --icons"
-    alias lla "ll -a"
-end
-
-# ── fzf ──────────────────────────────────────────────────────────────
-set -g FZF_PREVIEW_FILE_CMD "bat --style=numbers --color=always --line-range :500"
-set -g FZF_LEGACY_KEYBINDINGS 0
-
-# ── Aliases ──────────────────────────────────────────────────────────
-alias cat="bat"
-
-# ── Environment ──────────────────────────────────────────────────────
-set -gx EZA_CONFIG_DIR "$HOME/.config/eza"
-
-set -gx https_proxy ""
-set -gx http_proxy $https_proxy

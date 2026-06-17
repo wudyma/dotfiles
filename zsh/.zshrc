@@ -1,5 +1,11 @@
 # If you come from bash you might have to change your $PATH.
-export PATH=$HOME/bin:$HOME/.local/bin:/usr/local/bin:$PATH
+export PATH=$HOME/bin:$HOME/.local/bin:$PATH
+
+# ── Platform config ───────────────────────────────────────────────────
+# Must run early: brew shellenv sets PATH so eza/bat/fzf/zoxide/starship
+# are discoverable by the config blocks below.
+# The install script copies zsh/.zshrc.{macos,linux} → ~/.zshrc.local
+[ -f ~/.zshrc.local ] && source ~/.zshrc.local
 
 # Path to your Oh My Zsh installation.
 export ZSH="$HOME/.oh-my-zsh"
@@ -109,15 +115,24 @@ export LC_CTYPE=C.UTF-8
 # Example aliases
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
-alias ls="eza"
-alias la="ls -a"
-alias ll="ls -l"
-alias lla="ll -a"
+# ── eza ──────────────────────────────────────────────────────────────
+if command -v eza >/dev/null 2>&1; then
+    alias ls="eza"
+    alias la="ls -a"
+    alias ll="eza -l -g --icons"
+    alias lla="ll -a"
+fi
+
+# ── fzf ──────────────────────────────────────────────────────────────
+export FZF_PREVIEW_FILE_CMD="bat --style=numbers --color=always --line-range :500"
+export FZF_LEGACY_KEYBINDINGS=0
+
+# ── Aliases ──────────────────────────────────────────────────────────
+alias cat="bat"
 alias vim="nvim"
 
-# Source local secrets (API keys, proxies, etc.) — gitignored
-# The install script copies zsh/.zshrc.{macos,linux} → ~/.zshrc.local
-[ -f ~/.zshrc.local ] && source ~/.zshrc.local
+# ── EZA config ───────────────────────────────────────────────────────
+export EZA_CONFIG_DIR="$HOME/.config/eza"
 
 # Initialize zoxide and starship
 eval "$(zoxide init zsh)"

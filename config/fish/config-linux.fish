@@ -13,30 +13,11 @@ else
     echo "⚠  Homebrew not found. Install it first, then brew install fish." >&2
 end
 
-# ── Aliases ──────────────────────────────────────────────────────────
-alias cat="bat"
-
-# ── bun ──────────────────────────────────────────────────────────────
-set -gx BUN_INSTALL "$HOME/.bun"
-set -gx PATH "$BUN_INSTALL/bin" $PATH
-
 # ── Rust / Cargo ─────────────────────────────────────────────────────
 set -gx PATH "$HOME/.cargo/bin" $PATH
 
-# ── nvm ──────────────────────────────────────────────────────────────
-set -gx NVM_DIR "$HOME/.nvm"
-if test -f "$NVM_DIR/nvm.sh" && type -q bass
-    function nvm
-        bass source $NVM_DIR/nvm.sh --no-use ';' nvm $argv
-    end
-end
-
 # ── TeX Live ─────────────────────────────────────────────────────────
 set -gx PATH "$HOME/.local/texlive/2026/bin/aarch64-linux" $PATH
-
-# ── Proxies ──────────────────────────────────────────────────────────
-set -gx https_proxy ""
-set -gx http_proxy $https_proxy
 
 # ── K3S / Kubernetes ─────────────────────────────────────────────────
 set -gx KUBECONFIG "$HOME/.config/k3s/k3s.yaml"

@@ -1,25 +1,35 @@
-# Alias
-alias cat = "batcat"
+# ── Homebrew ─────────────────────────────────────────────────────────
+# Bootstrap note: zsh itself may be installed via `brew install zsh`, so
+# Homebrew must already exist by the time this config runs.  Install with:
+#   /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+# Uses /home/linuxbrew/.linuxbrew (sudo once for the prefix, then never again).
+# This prefix is required for precompiled binary bottles — custom prefixes
+# like ~/.linuxbrew force everything to build from source (unsupported).
+if [ -f /home/linuxbrew/.linuxbrew/bin/brew ]; then
+    eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+elif [ -f "$HOME/.linuxbrew/bin/brew" ]; then
+    eval "$("$HOME/.linuxbrew/bin/brew" shellenv)"
+fi
 
-# bun
+# ── bun ──────────────────────────────────────────────────────────────
 export BUN_INSTALL="$HOME/.bun"
 export PATH="$BUN_INSTALL/bin:$PATH"
 
-# rust
+# ── Rust / Cargo ─────────────────────────────────────────────────────
 export PATH="$HOME/.cargo/bin:$PATH"
 
-# nvm
+# ── nvm ──────────────────────────────────────────────────────────────
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"                   # This loads nvm
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion" # This loads nvm bash_completion
 
-# texlive
+# ── TeX Live ─────────────────────────────────────────────────────────
 export PATH="$HOME/.local/texlive/2026/bin/aarch64-linux:$PATH"
 
-# Proxies
+# ── Proxies ──────────────────────────────────────────────────────────
 export https_proxy=""
 export http_proxy=$https_proxy
 
-# K3S
+# ── K3S / Kubernetes ─────────────────────────────────────────────────
 export KUBECONFIG="$HOME/.config/k3s/k3s.yaml"
 alias k="kubectl"

@@ -1,7 +1,14 @@
-# Alias
-alias cat="bat"
+# ── Homebrew ─────────────────────────────────────────────────────────
+# Bootstrap note: zsh itself is installed via `brew install zsh`, so
+# Homebrew must already exist by the time this config runs.  The initial
+# Homebrew installation is handled by ~/.zprofile (zsh/.zprofile).
+# This block only sets up the zsh-side environment (PATH, MANPATH, etc.).
+if [ -f /opt/homebrew/bin/brew ]; then
+    eval "$(/opt/homebrew/bin/brew shellenv)"
+elif [ -f /usr/local/bin/brew ]; then
+    eval "$(/usr/local/bin/brew shellenv)"
+fi
 
-export EZA_CONFIG_DIR="$HOME/.config/eza"
-
+# ── Proxies ──────────────────────────────────────────────────────────
 export https_proxy=""
 export http_proxy=$https_proxy

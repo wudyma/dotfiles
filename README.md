@@ -2,36 +2,39 @@
 
 Personal dotfiles and system configuration — shell, terminal, editor, and tooling. Managed as a bare repo at `~/.dotfiles` with an install script that symlinks everything into place.
 
+**fish is the primary shell. zsh is available as a fallback.** All packages are installed via Homebrew on both macOS and Linux.
+
 ## Structure
 
 ```
 ~/.dotfiles/
-├── zsh/                   # Shell config
-│   ├── .zshrc             # Oh My Zsh with plugins, aliases, starship & zoxide init
-│   ├── .zshrc.linux       # Linux-specific additions (bun, rust, nvm, k3s)
-│   ├── .zshrc.macos       # macOS-specific (eza config dir, bat alias)
-│   └── .zprofile          # Login shell profile
-├── config/                # Application configs (symlinked into ~/.config)
-│   ├── bat/               # bat theme (Tokyo Night)
-│   ├── eza/               # eza color theme (Tokyo Night)
+├── config/
+│   ├── fish/              # Fish shell (primary)
+│   │   ├── config.fish        # Shared: platform dispatch, eza, fzf, bat, zoxide, starship
+│   │   ├── config-linux.fish  # Linux: Homebrew, bun, Rust, TeX Live, K3S
+│   │   └── config-macos.fish  # macOS: Homebrew, proxies
+│   ├── bat/               # bat theme (Catppuccin Mocha)
+│   ├── eza/               # eza color theme (Catppuccin Mocha)
 │   ├── ghostty/           # Ghostty terminal emulator
 │   ├── nvim/              # Neovim via LazyVim
-│   ├── powershell/        # PowerShell profile
-│   ├── starship.toml      # Starship prompt — Catppuccin Mocha palette + git indicators
-│   ├── starship_windows.toml
+│   ├── powershell/        # PowerShell profile (Windows)
+│   ├── starship.toml      # Starship prompt — Catppuccin Mocha palette
 │   ├── tmux/              # tmux with Catppuccin Mocha + TPM plugins
-│   ├── windows_terminal/  # Windows Terminal settings
 │   ├── yazi/              # Yazi terminal file manager (Catppuccin Mocha)
 │   └── zed/               # Zed editor settings
+├── zsh/                   # Zsh shell (fallback)
+│   ├── .zshrc             # Oh My Zsh + shared tool configs (eza, fzf, bat)
+│   ├── .zshrc.linux       # Linux: Homebrew, bun, Rust, nvm, TeX Live, K3S
+│   ├── .zshrc.macos       # macOS: Homebrew, proxies
+│   └── .zprofile          # Login shell: Homebrew auto-install + PATH
 ├── claude/                # Claude Code config
-│   ├── settings.json      # API key helper, model settings, statusline
-│   ├── statusline.sh      # Custom statusline: path | git branch + status | prompt
-│   └── CLAUDE.md          # Project instructions for Claude Code
+│   ├── settings.json
+│   └── CLAUDE.md
 ├── ssh/
-│   ├── config             # SSH config with multiplexing, security hardening
+│   ├── config             # SSH config with multiplexing
 │   └── config.d/          # Per-host SSH snippets
 ├── install/
-│   ├── install.sh         # Linux & macOS installer
+│   ├── install.sh         # macOS & Linux installer (Homebrew-only)
 │   └── install.ps1        # Windows installer (PowerShell 7+)
 ├── .gitconfig             # Git aliases, ghq root, URL rewriting
 └── .gitignore
@@ -39,9 +42,7 @@ Personal dotfiles and system configuration — shell, terminal, editor, and tool
 
 ## Install
 
-Clone the repo and run the install script:
-
-**Linux & macOS:**
+**macOS & Linux:**
 
 ```bash
 git clone https://github.com/mazhengcn/dotfiles.git ~/.dotfiles
@@ -56,18 +57,37 @@ cd $env:USERPROFILE\.dotfiles
 .\install\install.ps1
 ```
 
-The install script symlinks configs into the right places and installs dependencies (Homebrew on macOS, apt/dnf/pacman on Linux, winget on Windows).
+The install script:
+1. Installs Homebrew if missing (both macOS and Linux)
+2. Installs all packages via `brew install` — fish, git, neovim, tmux, eza, bat, oxlint, oxfmt, starship, zoxide, fzf, ripgrep, and more
+3. Sets **fish as the default shell**
+4. Symlinks configs into place — `~/.config/fish`, `~/.zshrc`, `~/.config/nvim`, etc.
 
 ## What's included
 
-### Shell — zsh with Oh My Zsh
+### Shell — fish (primary) + zsh (fallback)
 
-- **Plugins:** git, extract, copypath, copyfile, web-search, zsh-autosuggestions, zsh-syntax-highlighting
-- **Prompt:** [Starship](https://starship.rs) with a custom Catppuccin Mocha palette and full git status (staged, modified, untracked, ahead/behind, stash, conflicts)
-- **Aliases:** `ls` → `eza`, `vim` → `nvim`, `cat` → `bat`, plus `la`, `ll`, `lla`
-- **Directory jumping:** [zoxide](https://github.com/ajeetdsouza/zoxide) (smarter `cd`)
-- **Fuzzy finder:** [fzf](https://github.com/junegunn/fzf) with zsh integration
-- **Repo management:** [ghq](https://github.com/x-motemen/ghq) — clones repos to `~/repos`
+Both shells share the same tool configs. Platform differences (Homebrew path, platform-specific tools) are isolated to one small file per shell. The platform config is sourced at the top of each base file so Homebrew tools are on PATH before any aliases or integrations reference them.
+
+**Shared across both shells and platforms:**
+- **eza** replaces `ls` — `ll` shows icons, git status, and groups directories first
+- **bat** replaces `cat` — syntax highlighting and line numbers
+- **fzf** — fuzzy finder with bat-powered file preview
+- **zoxide** — smarter `cd` (frecency-based directory jumping)
+- **starship** — Catppuccin Mocha prompt with full git status
+- **ghq** — clones repos to `~/repos/`
+
+**fish extras:**
+- `c` → `claude` (Claude Code), `g` → `git`, `k` → `kubectl`
+- `vim` → `nvim`
+- nvm (via `bass`)
+
+**zsh extras (via Oh My Zsh):**
+- Plugins: git, extract, copypath, copyfile, web-search, zsh-autosuggestions, zsh-syntax-highlighting
+- Auto-installs Oh My Zsh if missing
+
+**Platform-specific (Linux only):**
+- bun, Rust/Cargo, nvm, TeX Live, K3S/kubectl
 
 ### Terminal — Ghostty
 
@@ -76,6 +96,11 @@ GitHub Dark Default theme. Maple Mono NF CN at 18px, 80% background opacity with
 ### Editor — Neovim (LazyVim)
 
 Full-featured Neovim setup via [LazyVim](https://www.lazyvim.org/). Plugins and extras managed through lazy.nvim. Telescope with ripgrep/fd for searching.
+
+**Linting & formatting (JS/TS/HTML/Markdown):**
+- **oxlint** replaces eslint — fast Rust-based linter with zero config
+- **oxfmt** replaces prettier — matching formatter from the same toolchain
+- Python uses `ty` (type checking) and `ruff` (formatting)
 
 ### Multiplexer — tmux
 
@@ -101,6 +126,7 @@ Custom statusline mirroring the Starship prompt: directory path, git branch with
 - **Aliases:** `st`, `co`, `ci`, `ca`, `br`, `ps`, `pl`, plus interactive ones using [peco](https://github.com/peco/peco) for fuzzy-selecting files and commits
 - **ghq root:** `~/repos`
 - **URL rewriting:** GitHub/Gitee HTTPS → SSH
+- **Diff viewer:** [delta](https://github.com/dandavison/delta) with syntax highlighting
 
 ### SSH
 
@@ -108,14 +134,32 @@ Connection multiplexing for GitHub and homelab hosts, modern key exchange (Curve
 
 ### Additional configs
 
-- **bat** — Tokyo Night theme, `cat` aliased to `bat` (or `batcat` on Debian)
-- **eza** — Tokyo Night color theme for file listing
+- **bat** — Catppuccin Mocha theme
+- **eza** — Catppuccin Mocha color theme for file listing
 - **Zed** — Catppuccin Espresso theme, Maple Mono font, vim mode, autosave on focus change
 - **Windows** — PowerShell profile, Windows Terminal settings, Starship config
 
+## Design
+
+### Homebrew on both platforms
+
+All CLI tools are installed via Homebrew — on macOS and Linux. Same package names, same versions, no platform-specific package manager glue. The install script bootstraps Homebrew itself on either platform.
+
+### Fish primary, zsh fallback
+
+fish is the daily driver — faster startup, saner defaults, inline autosuggestions out of the box. zsh is kept as a fallback (login shell compatibility, Oh My Zsh plugins, and for systems where fish isn't available).
+
+### Platform dispatch runs first
+
+In both fish and zsh, the platform-specific config (which sets up Homebrew PATH via `brew shellenv`) is sourced at the very top of the base file. This guarantees brew-installed tools are on PATH before any aliases, fzf config, or shell integrations reference them.
+
+### Thin platform files
+
+Platform-specific configs are minimal — Homebrew path setup and tools that genuinely differ between macOS and Linux (bun, Rust, nvm, TeX Live, K3S on Linux). Everything else lives in the shared base file.
+
 ## Recommended CLI tools
 
-These are installed automatically by the install script as recommended extras. All are fast, modern Rust/Go rewrites of classic Unix tools:
+Installed automatically as extras. All are fast, modern Rust/Go rewrites of classic Unix tools:
 
 | Tool | Replaces | What it does |
 |------|----------|-------------|
@@ -156,7 +200,7 @@ Other great tools worth checking out (not installed automatically):
 
 After running the installer:
 
-1. Restart your terminal or run `exec $SHELL`
+1. Restart your terminal or run `exec fish`
 2. In tmux: `prefix + I` to install plugins
 3. In Neovim: `:Lazy sync` to install plugins
 4. Try `yazi` — a fast terminal file manager with image preview
