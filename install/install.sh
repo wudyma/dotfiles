@@ -318,6 +318,23 @@ post_install() {
         info "fish is already the default shell"
     fi
 
+    # Fish plugin manager (fisher) + plugins
+    if command -v fish &>/dev/null; then
+        step "installing fisher + fish plugins"
+        if $DRY_RUN; then
+            info "[dry-run] would run: fish -c 'fisher update'"
+        else
+            fish -c "
+                if not functions -q fisher
+                    curl -sL https://raw.githubusercontent.com/jorgebucaran/fisher/main/functions/fisher.fish | source
+                end
+                fisher update
+            " || warn "fisher update failed — plugins will install on first fish shell"
+        fi
+    else
+        warn "fish not found — fisher plugins will install on first fish shell via conf.d/fisher.fish"
+    fi
+
     # tmux plugin manager
     if [ -d ~/.config/tmux/plugins/tpm ]; then
         info "TPM already installed"

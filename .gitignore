@@ -3,6 +3,7 @@ ssh/config.d/*
 !ssh/config.d/.gitkeep
 
 # Config state files (generated, not tracked)
+config/fish/functions/_*
 config/fish/fish_variables
 config/tmux/plugins
 config/nvim/lazy-lock.json
