@@ -12,7 +12,7 @@ cursor-color = cell-foreground
 cursor-text = cell-background
 shell-integration-features = no-cursor
 
-macos-titlebar-style = transparent
+macos-titlebar-style = hidden
 macos-option-as-alt = true
 
 window-padding-x = 8
