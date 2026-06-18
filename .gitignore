@@ -5,6 +5,7 @@ ssh/config.d/*
 # Config state files (generated, not tracked)
 config/fish/functions/_*
 config/fish/fish_variables
+config/fish/fish_plugins
 config/tmux/plugins
 config/nvim/lazy-lock.json
 config/nvim/lazyvim.json
