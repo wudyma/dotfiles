@@ -16,7 +16,6 @@
     "type": "command",
     "command": "starship statusline claude-code"
   },
-  "editorMode": "vim",
   "hooks": {
     "UserPromptSubmit": [
       {
