@@ -10,12 +10,6 @@
     "CLAUDE_CODE_SUBAGENT_MODEL": "deepseek-v4-flash",
     "CLAUDE_CODE_EFFORT_LEVEL": "max"
   },
-  "tui": "fullscreen",
-  "theme": "auto",
-  "statusLine": {
-    "type": "command",
-    "command": "starship statusline claude-code"
-  },
   "hooks": {
     "UserPromptSubmit": [
       {
@@ -61,5 +55,11 @@
         ]
       }
     ]
-  }
+  },
+  "statusLine": {
+    "type": "command",
+    "command": "starship statusline claude-code"
+  },
+  "tui": "fullscreen",
+  "theme": "auto"
 }
