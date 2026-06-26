@@ -1,6 +1,8 @@
 set fish_greeting ""
 
 set -gx TERM xterm-256color
+set -gx COLORTERM truecolor
+set -gx CLAUDE_CODE_TMUX_TRUECOLOR true
 
 # Language
 set -gx LANG C.UTF-8
