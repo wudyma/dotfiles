@@ -4,7 +4,7 @@ font-family = Maple Mono NF CN
 font-size = 18
 
 background-opacity = 0.9
-background-blur = 20
+background-blur = true
 
 cursor-style = block
 cursor-style-blink = false
