@@ -1,6 +1,7 @@
 # SSH — only track the .gitkeep
 ssh/config.d/*
 !ssh/config.d/.gitkeep
+copilot.fish
 
 # Config state files (generated, not tracked)
 config/fish/functions/_*
