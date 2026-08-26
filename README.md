@@ -23,7 +23,7 @@ Personal dotfiles and system configuration — shell, terminal, editor, and tool
 │   ├── yazi/              # Yazi terminal file manager (Catppuccin Mocha)
 │   └── zed/               # Zed editor settings
 ├── zsh/                   # Zsh shell (fallback)
-│   ├── .zshrc             # Oh My Zsh + shared tool configs (eza, fzf, bat)
+│   ├── .zshrc             # Oh My Zsh + fish-parity aliases/env (eza, fzf, bat, truecolor)
 │   ├── .zshrc.linux       # Linux: Homebrew, bun, Rust, nvm, TeX Live, K3S
 │   ├── .zshrc.macos       # macOS: Homebrew, proxies
 │   └── .zprofile          # Login shell: Homebrew auto-install + PATH
@@ -72,19 +72,21 @@ Both shells share the same tool configs. Platform differences (Homebrew path, pl
 **Shared across both shells and platforms:**
 - **eza** replaces `ls` — `ll` shows icons, git status, and groups directories first
 - **bat** replaces `cat` — syntax highlighting and line numbers
-- **fzf** — fuzzy finder with bat-powered file preview
+- **fzf** — fuzzy finder with bat-powered file preview; `Ctrl-R` history, `Alt-C`/`Ctrl-F` directory jump
 - **zoxide** — smarter `cd` (frecency-based directory jumping)
 - **starship** — Catppuccin Mocha prompt with full git status
 - **ghq** — clones repos to `~/repos/`
+- **Aliases:** `c` → `claude`, `g` → `git`, `claude-yolo` → `claude --dangerously-skip-permissions`, `vim` → `nvim`, `k` → `kubectl` (Linux)
+- **Terminal:** `TERM=xterm-256color`, `COLORTERM=truecolor`, `CLAUDE_CODE_TMUX_TRUECOLOR=true` — identical tmux/Claude truecolor rendering in either shell
+- **Editor:** `nvim` (`EDITOR`)
 
 **fish extras:**
-- `c` → `claude` (Claude Code), `g` → `git`, `k` → `kubectl`
-- `vim` → `nvim`
-- nvm (via `bass`)
+- Inline autosuggestions & syntax highlighting built-in; `nvm` (via `bass`)
 
 **zsh extras (via Oh My Zsh):**
 - Plugins: git, extract, copypath, copyfile, web-search, zsh-autosuggestions, zsh-syntax-highlighting
 - Auto-installs Oh My Zsh if missing
+- Sourced platform fallback (mirrors fish) so brew tools are on PATH even before running the installer
 
 **Platform-specific (Linux only):**
 - bun, Rust/Cargo, nvm, TeX Live, K3S/kubectl

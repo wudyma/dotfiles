@@ -9,6 +9,8 @@ if [ -f /home/linuxbrew/.linuxbrew/bin/brew ]; then
     eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
 elif [ -f "$HOME/.linuxbrew/bin/brew" ]; then
     eval "$("$HOME/.linuxbrew/bin/brew" shellenv)"
+else
+    echo "⚠  Homebrew not found. Install it first, then brew install zsh." >&2
 fi
 
 # ── bun ──────────────────────────────────────────────────────────────
