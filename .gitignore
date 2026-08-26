@@ -1,3 +1,6 @@
+# yazi
+config/yazi/flavors
+
 # SSH — only track the .gitkeep
 ssh/config.d/*
 !ssh/config.d/.gitkeep
