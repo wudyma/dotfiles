@@ -1,0 +1,19 @@
+# ── Local overrides ───────────────────────────────────────────────────
+# Sourced by zsh/.zshrc AFTER the platform template (zsh/.zshrc.linux|macos).
+# Put machine-specific settings here. This file is gitignored — your real
+# copy lives at ~/.zshrc.local (created from this template by install.sh).
+
+# ── Proxy ──────────────────────────────────────────────────────────────
+# Uncomment and adjust to match your proxy setup (the same values fish uses
+# in config/fish/config-local.fish).
+#
+# export http_proxy="http://192.168.1.5:8234"
+# export https_proxy=$http_proxy
+# export all_proxy="socks5://192.168.1.5:8235"
+# export no_proxy="localhost,127.0.0.1,::1,.local,192.168.0.0/16,.lan"
+#
+# # Export uppercase variants too (some tools read only the uppercase form):
+# export HTTP_PROXY=$http_proxy
+# export HTTPS_PROXY=$https_proxy
+# export ALL_PROXY=$all_proxy
+# export NO_PROXY=$no_proxy

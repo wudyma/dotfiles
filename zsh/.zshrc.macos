@@ -10,7 +10,3 @@ elif [ -f /usr/local/bin/brew ]; then
 else
     echo "⚠  Homebrew not found. Run the zsh bootstrap (~/.zprofile) first." >&2
 fi
-
-# ── Proxies ──────────────────────────────────────────────────────────
-export https_proxy=""
-export http_proxy=$https_proxy

@@ -25,7 +25,8 @@ Personal dotfiles and system configuration — shell, terminal, editor, and tool
 ├── zsh/                   # Zsh shell (fallback)
 │   ├── .zshrc             # Oh My Zsh + fish-parity aliases/env (eza, fzf, bat, truecolor)
 │   ├── .zshrc.linux       # Linux: Homebrew, bun, Rust, nvm, TeX Live, K3S
-│   ├── .zshrc.macos       # macOS: Homebrew, proxies
+│   ├── .zshrc.macos       # macOS: Homebrew
+│   ├── .zshrc.local.example  # Local-overrides template (proxy) → ~/.zshrc.local
 │   └── .zprofile          # Login shell: Homebrew auto-install + PATH
 ├── claude/                # Claude Code config
 │   ├── settings.json
@@ -85,8 +86,8 @@ Both shells share the same tool configs. Platform differences (Homebrew path, pl
 
 **zsh extras (via Oh My Zsh):**
 - Plugins: git, extract, copypath, copyfile, web-search, zsh-autosuggestions, zsh-syntax-highlighting
-- Auto-installs Oh My Zsh if missing
-- Sourced platform fallback (mirrors fish) so brew tools are on PATH even before running the installer
+- Auto-installs Oh My Zsh if missing; clones `zsh-autosuggestions` & `zsh-syntax-highlighting` into `${ZSH_CUSTOM:-$ZSH/custom}/plugins` (OMZ install method)
+- Always sources the platform template from the repo (mirrors fish), then `~/.zshrc.local` for machine-specific overrides (proxy, etc.)
 
 **Platform-specific (Linux only):**
 - bun, Rust/Cargo, nvm, TeX Live, K3S/kubectl

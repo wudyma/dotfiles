@@ -28,10 +28,6 @@ export NVM_DIR="$HOME/.nvm"
 # ── TeX Live ─────────────────────────────────────────────────────────
 export PATH="$HOME/.local/texlive/2026/bin/aarch64-linux:$PATH"
 
-# ── Proxies ──────────────────────────────────────────────────────────
-export https_proxy=""
-export http_proxy=$https_proxy
-
 # ── K3S / Kubernetes ─────────────────────────────────────────────────
 export KUBECONFIG="$HOME/.config/k3s/k3s.yaml"
 alias k="kubectl"
