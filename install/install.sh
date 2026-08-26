@@ -255,15 +255,14 @@ link_dotfiles() {
     symlink "$DOTFILES_DIR/zsh/.zshrc"        ~/.zshrc
     symlink "$DOTFILES_DIR/zsh/.zprofile"     ~/.zprofile
 
-    # Platform-specific → ~/.zshrc.local (sourced by .zshrc)
+    # Machine-specific overrides → ~/.zshrc.local (gitignored, sourced by
+    # zsh/.zshrc after the platform template — for proxies, etc.)
     if [ ! -f ~/.zshrc.local ]; then
         if $DRY_RUN; then
-            info "[dry-run] would create ~/.zshrc.local from $OS template"
+            info "[dry-run] would create ~/.zshrc.local from the local-overrides template"
         else
-            case "$OS" in
-                macos) cp "$DOTFILES_DIR/zsh/.zshrc.macos" ~/.zshrc.local ; info "~/.zshrc.local created from macOS template" ;;
-                linux) cp "$DOTFILES_DIR/zsh/.zshrc.linux" ~/.zshrc.local ; info "~/.zshrc.local created from Linux template" ;;
-            esac
+            cp "$DOTFILES_DIR/zsh/.zshrc.local.example" ~/.zshrc.local
+            info "~/.zshrc.local created from local-overrides template"
         fi
     else
         info "~/.zshrc.local already exists — keeping your version"

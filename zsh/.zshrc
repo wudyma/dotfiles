@@ -19,20 +19,16 @@ export LC_CTYPE="C.UTF-8"
 # ── Platform config ───────────────────────────────────────────────────
 # Must run early: brew shellenv sets PATH so eza/bat/fzf/zoxide/starship
 # are discoverable by the config blocks below.
-# The install script copies zsh/.zshrc.{macos,linux} → ~/.zshrc.local
-# (gitignored). If that's missing — e.g. a fresh clone that hasn't run the
-# installer — fall back to the repo template, mirroring how fish sources
-# config-{macos,linux}.fish directly from the dotfiles dir.
-if [ -f ~/.zshrc.local ]; then
-    source ~/.zshrc.local
-else
-    ZSH_ROOT="${${(%):-%x}:A:h}"
-    case "$(uname -s)" in
-        Darwin) [ -f "$ZSH_ROOT/.zshrc.macos" ] && source "$ZSH_ROOT/.zshrc.macos" ;;
-        Linux)  [ -f "$ZSH_ROOT/.zshrc.linux" ] && source "$ZSH_ROOT/.zshrc.linux" ;;
-    esac
-    unset ZSH_ROOT
-fi
+# Always source the repo template (mirrors how fish sources
+# config-{macos,linux}.fish directly from the dotfiles dir), then any
+# machine-specific overrides in ~/.zshrc.local (gitignored — proxies, etc.).
+ZSH_ROOT="${${(%):-%x}:A:h}"
+case "$(uname -s)" in
+    Darwin) [ -f "$ZSH_ROOT/.zshrc.macos" ] && source "$ZSH_ROOT/.zshrc.macos" ;;
+    Linux)  [ -f "$ZSH_ROOT/.zshrc.linux" ] && source "$ZSH_ROOT/.zshrc.linux" ;;
+esac
+unset ZSH_ROOT
+[ -f ~/.zshrc.local ] && source ~/.zshrc.local
 
 # ── Oh My Zsh ─────────────────────────────────────────────────────────
 # Path to your Oh My Zsh installation.
@@ -48,6 +44,29 @@ if [ ! -d "$ZSH" ]; then
   echo "oh-my-zsh not found. Installing..."
   sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
 fi
+
+# Auto-install the plugins OMZ doesn't bundle (zsh-autosuggestions,
+# zsh-syntax-highlighting) by cloning them into the OMZ custom plugins dir,
+# per each plugin's own install instructions. OMZ's loader sources
+# `${ZSH_CUSTOM}/plugins/<plugin>/<plugin>.plugin.zsh`, which these repos ship.
+ZSH_CUSTOM_DIR="${ZSH_CUSTOM:-$ZSH/custom}"
+if command -v git >/dev/null 2>&1; then
+    mkdir -p "$ZSH_CUSTOM_DIR/plugins"
+    _omz_plugin() {
+        local repo="$1" name="$2"
+        if [ ! -d "$ZSH_CUSTOM_DIR/plugins/$name" ]; then
+            echo "oh-my-zsh: installing plugin '$name'"
+            git clone "$repo" "$ZSH_CUSTOM_DIR/plugins/$name" >/dev/null 2>&1 \
+                || echo "⚠  Failed to install plugin '$name'" >&2
+        fi
+    }
+    _omz_plugin https://github.com/zsh-users/zsh-autosuggestions.git zsh-autosuggestions
+    _omz_plugin https://github.com/zsh-users/zsh-syntax-highlighting.git zsh-syntax-highlighting
+    unset _omz_plugin
+else
+    echo "⚠  git not found; cannot auto-install zsh plugins." >&2
+fi
+unset ZSH_CUSTOM_DIR
 
 source "$ZSH/oh-my-zsh.sh"
 
