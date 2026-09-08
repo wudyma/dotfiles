@@ -1,0 +1,39 @@
+name: Validate dotfiles
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Check Bash syntax
+        run: bash -n install/install.sh
+      - name: Install shell test dependencies (Fish 4+)
+        run: |
+          if [ "$RUNNER_OS" = Linux ]; then
+            eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+          fi
+          brew install fish zsh
+          echo "$(brew --prefix)/bin" >> "$GITHUB_PATH"
+      - name: Test installer without changing the runner's home
+        run: python3 -m unittest discover -s tests -v
+  windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Test Windows backups, symlinks, and junctions
+        shell: pwsh
+        run: ./tests/test_windows.ps1

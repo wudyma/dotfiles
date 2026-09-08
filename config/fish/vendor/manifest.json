@@ -1,0 +1,36 @@
+{
+  "fzf": {
+    "repository": "https://github.com/PatrickF1/fzf.fish",
+    "commit": "6a6136998879dcc1f29a405dfdd6b92c5f229c39",
+    "files": {
+      "LICENSE.md": "904ecd1ca817d2a6afdda24a158fa77a5797eb26c6755c45e780b9327f42f524",
+      "README.md": "35baa79721eaec4df90ef719001ba02ce55a91815789394d462d12d2e4b20fc0",
+      "completions/fzf_configure_bindings.fish": "d03a776231496073faebdac889e8f9263e8bd304bd90fcd3a8ca088eb0650a9d",
+      "conf.d/fzf.fish": "9c9f3707a6df151a269d6cacbd10e8db97f59ee01e53987696be07aabebb49a3",
+      "functions/_fzf_configure_bindings_help.fish": "71ceceb198b540bc7930b1d04f4c57dafb14803d2611541dacc1f1ae8ed204e9",
+      "functions/_fzf_extract_var_info.fish": "f8c8060c1b7a4864afba6d60fe31f142817f2e9f63f450113bc5abafeedf0fa0",
+      "functions/_fzf_preview_changed_file.fish": "bcecad5425aa64686d7bb12fe8ce015a53a7fad5182518c690a76f521e407d91",
+      "functions/_fzf_preview_file.fish": "1fac5d86fb0b481d5ccb919eafff75579975c926969be715aa51b091fa89d14c",
+      "functions/_fzf_report_diff_type.fish": "3ae25fc895e0795d486826343dee2cab1e0a1276274b83951d4831a9a2aaf05c",
+      "functions/_fzf_report_file_type.fish": "7911dc19beb308181aec3b606e1c5e313aa147ac3abd32eb436b8eb920893022",
+      "functions/_fzf_search_directory.fish": "07329630e0bc960ed4963b69e2dae216bb7c256828ef0124544ef5404ca4e261",
+      "functions/_fzf_search_git_log.fish": "2d94ea0e51784796b266dfd462b73725e20e4cab52923d4e0baf2a2cfeaad3f7",
+      "functions/_fzf_search_git_status.fish": "4d6bf0bea992db591ede523a2862d669a61eb726ccb09da3fb436c5f920efe1d",
+      "functions/_fzf_search_history.fish": "6a18bbe24d6846910160d3da4e724e5cf8aa768d2cc61945d75c08b25af48827",
+      "functions/_fzf_search_processes.fish": "6a75d26216118dbd503fc82a34b056ac49424f1285d14c53437646b9f25b98b0",
+      "functions/_fzf_search_variables.fish": "157185c86d1d7df84113d091f29d9d3db65eb79eb92bb6b64455cd6d7155e04b",
+      "functions/_fzf_wrapper.fish": "98c6fc4c030d3a72aea140efd33823c575a6d87b8a7ca99af5759a868e575ea6",
+      "functions/fzf_configure_bindings.fish": "6fb5e3de9e622ba53da318e0a36151043250a7d0abe1085fd53709bbea08e3a5"
+    }
+  },
+  "bass": {
+    "repository": "https://github.com/edc/bass",
+    "commit": "79b62958ecf4e87334f24d6743e5766475bcf4d0",
+    "files": {
+      "LICENSE": "b21b0ba248167b3b5c3019bba3596faef18964bfee7a232a27bc6079859fcd2b",
+      "README.md": "4b62a407c60a3c0988ba48280af90605b1152c9931a4924b998d952eff35ee01",
+      "functions/__bass.py": "3f6d3495772e0ec52e15924cd9bb4c3eec87ef13e45ef2272a7aa2e4797bc9cc",
+      "functions/bass.fish": "d57689dba98e3228049618f352426aa59fd018f70697ab400639ef78b0eadef4"
+    }
+  }
+}

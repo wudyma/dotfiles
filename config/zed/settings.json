@@ -4,6 +4,8 @@
   "autosave": "on_focus_change",
   "format_on_save": "on",
   "soft_wrap": "editor_width",
+  // Themes
+  "theme": "One Dark",
   // Typography
   "buffer_font_family": "Maple Mono NF CN",
   "buffer_font_size": 16,
@@ -28,23 +30,19 @@
     {
       "host": "homelab",
       "args": [],
-      "projects": []
+      "projects": [],
     },
     {
       "host": "homelab",
       "args": [],
       "projects": [
         {
-          "paths": [
-            "/home/zheng"
-          ]
+          "paths": ["/home/zheng"],
         },
         {
-          "paths": [
-            "/home/zheng/wikis/company"
-          ]
-        }
-      ]
-    }
+          "paths": ["/home/zheng/wikis/company"],
+        },
+      ],
+    },
   ],
 }
