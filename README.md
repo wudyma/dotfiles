@@ -1,209 +1,171 @@
 # dotfiles
 
-Personal dotfiles and system configuration — shell, terminal, editor, and tooling. Managed as a bare repo at `~/.dotfiles` with an install script that symlinks everything into place.
-
-**fish is the primary shell. zsh is available as a fallback.** All packages are installed via Homebrew on both macOS and Linux.
-
-## Structure
-
-```
-~/.dotfiles/
-├── config/
-│   ├── fish/              # Fish shell (primary)
-│   │   ├── config.fish        # Shared: platform dispatch, eza, fzf, bat, zoxide, starship
-│   │   ├── config-linux.fish  # Linux: Homebrew, bun, Rust, TeX Live, K3S
-│   │   └── config-macos.fish  # macOS: Homebrew, proxies
-│   ├── bat/               # bat theme (Catppuccin Mocha)
-│   ├── eza/               # eza color theme (Catppuccin Mocha)
-│   ├── ghostty/           # Ghostty terminal emulator
-│   ├── nvim/              # Neovim via LazyVim
-│   ├── powershell/        # PowerShell profile (Windows)
-│   ├── starship.toml      # Starship prompt — Catppuccin Mocha palette
-│   ├── tmux/              # tmux with Catppuccin Mocha + TPM plugins
-│   ├── yazi/              # Yazi terminal file manager (Catppuccin Mocha)
-│   └── zed/               # Zed editor settings
-├── zsh/                   # Zsh shell (fallback)
-│   ├── .zshrc             # Oh My Zsh + fish-parity aliases/env (eza, fzf, bat, truecolor)
-│   ├── .zshrc.linux       # Linux: Homebrew, bun, Rust, nvm, TeX Live, K3S
-│   ├── .zshrc.macos       # macOS: Homebrew
-│   ├── .zshrc.local.example  # Local-overrides template (proxy) → ~/.zshrc.local
-│   └── .zprofile          # Login shell: Homebrew auto-install + PATH
-├── claude/                # Claude Code config
-│   ├── settings.json
-│   └── CLAUDE.md
-├── ssh/
-│   ├── config             # SSH config with multiplexing
-│   └── config.d/          # Per-host SSH snippets
-├── install/
-│   ├── install.sh         # macOS & Linux installer (Homebrew-only)
-│   └── install.ps1        # Windows installer (PowerShell 7+)
-├── .gitconfig             # Git aliases, ghq root, URL rewriting
-└── .gitignore
-```
+Personal Fish, Zsh, terminal, editor, and development-tool configuration. This is a
+regular Git checkout at `~/.dotfiles`; installers link individual files and config
+directories into place. Fish is the primary shell and Zsh is the fallback.
 
 ## Install
 
-**macOS & Linux:**
+macOS and Linux:
 
 ```bash
 git clone https://github.com/mazhengcn/dotfiles.git ~/.dotfiles
-cd ~/.dotfiles && ./install/install.sh
+cd ~/.dotfiles
+./install/install.sh --dry-run
+./install/install.sh
 ```
 
-**Windows (PowerShell 7+):**
+The full Unix installer bootstraps Homebrew, installs CLI dependencies and fonts,
+links configurations, installs Oh My Zsh and TPM, and sets Fish as the default
+shell. On macOS it also installs Ghostty and Zed as Homebrew casks. On Linux,
+install those GUI applications using their supported distribution packages.
+
+Use individual setup modes when dependencies are already installed:
+
+```bash
+./install/install.sh --links-only --dry-run
+./install/install.sh --links-only
+./install/install.sh --plugins-only
+```
+
+`--links-only` sets up configuration links without installing tools or changing
+shells. `--plugins-only` bootstraps Oh My Zsh, its two extra plugins, and TPM;
+existing checkouts are preserved. Both modes accept `--dry-run`. Unknown or
+conflicting options fail before changes.
+
+Windows, from PowerShell 7.2+:
 
 ```powershell
 git clone https://github.com/mazhengcn/dotfiles.git $env:USERPROFILE\.dotfiles
 cd $env:USERPROFILE\.dotfiles
+.\install\install.ps1 -DryRun
 .\install\install.ps1
+# Or link configurations only:
+.\install\install.ps1 -LinksOnly
 ```
 
-The install script:
-1. Installs Homebrew if missing (both macOS and Linux)
-2. Installs all packages via `brew install` — fish, git, neovim, tmux, eza, bat, oxlint, oxfmt, starship, zoxide, fzf, ripgrep, and more
-3. Sets **fish as the default shell**
-4. Symlinks configs into place — `~/.config/fish`, `~/.zshrc`, `~/.config/nvim`, etc.
+Windows uses winget and requires permission to create symbolic links (Developer
+Mode or an elevated shell). `-NoFonts` skips font installation. Git and Windows
+Terminal settings are copied; the other supported configs are linked.
 
-## What's included
+Both installers preserve conflicting configuration files and links under unused
+names: `.bak`, `.bak.1`, and so on. Correct links and identical Windows copies are
+kept. To restore a backup, remove the installed link/file and move the desired
+backup back to its original path. Keep this checkout in place while links use it.
+Package failures produce a nonzero final result listing failed operations; fatal
+errors stop setup immediately. A dry run performs no downloads or config writes.
 
-### Shell — fish (primary) + zsh (fallback)
+## Layout
 
-Both shells share the same tool configs. Platform differences (Homebrew path, platform-specific tools) are isolated to one small file per shell. The platform config is sourced at the top of each base file so Homebrew tools are on PATH before any aliases or integrations reference them.
+| Path | Purpose |
+| --- | --- |
+| `config/fish/` | Shared shell config, platform environment, custom bindings |
+| `config/fish/vendor/` | Complete pinned fzf.fish and bass sources, licenses, integrity manifest |
+| `zsh/` | Login environment and interactive fallback shell configuration |
+| `config/nvim/` | LazyVim configuration and tracked `lazy-lock.json` |
+| `config/tmux/` | tmux configuration; generated TPM checkouts are ignored |
+| `config/{ghostty,zed,yazi,bat,eza}/` | Application configuration |
+| `config/starship.toml` | Shared Starship prompt |
+| `config/powershell/`, `config/windows_terminal/` | Windows shell and terminal |
+| `claude/` | Personal Claude settings and instructions |
+| `ssh/config`, `ssh/examples/` | Shared SSH defaults and optional proxy example |
+| `install/packages/` | Shared Homebrew formulae and macOS-only casks |
+| `tests/` | Isolated installer, shell, and vendored-source regression tests |
 
-**Shared across both shells and platforms:**
-- **eza** replaces `ls` — `ll` shows icons, git status, and groups directories first
-- **bat** replaces `cat` — syntax highlighting and line numbers
-- **fzf** — fuzzy finder with bat-powered file preview; `Ctrl-R` history, `Alt-C`/`Ctrl-F` directory jump
-- **zoxide** — smarter `cd` (frecency-based directory jumping)
-- **starship** — Catppuccin Mocha prompt with full git status
-- **ghq** — clones repos to `~/repos/`
-- **Aliases:** `c` → `claude`, `g` → `git`, `claude-yolo` → `claude --dangerously-skip-permissions`, `vim` → `nvim`, `k` → `kubectl` (Linux)
-- **Terminal:** `TERM=xterm-256color`, `COLORTERM=truecolor`, `CLAUDE_CODE_TMUX_TRUECOLOR=true` — identical tmux/Claude truecolor rendering in either shell
-- **Editor:** `nvim` (`EDITOR`)
+## Shell behavior
 
-**fish extras:**
-- Inline autosuggestions & syntax highlighting built-in; `nvm` (via `bass`)
+Platform files set up an existing Homebrew installation before optional tools are
+loaded. Shell startup never installs Homebrew, Oh My Zsh, or Fish plugins. Oh My
+Zsh automatic updates are disabled; updates are explicit maintenance operations.
+Fish plugins are vendored, so a fresh clone needs no Fisher bootstrap or downloads.
+The pinned fzf.fish version requires Fish 4+, fzf 0.33+, fd 8.5+, and bat 0.16+;
+the full installer obtains these tools through Homebrew.
 
-**zsh extras (via Oh My Zsh):**
-- Plugins: git, extract, copypath, copyfile, web-search, zsh-autosuggestions, zsh-syntax-highlighting
-- Auto-installs Oh My Zsh if missing; clones `zsh-autosuggestions` & `zsh-syntax-highlighting` into `${ZSH_CUSTOM:-$ZSH/custom}/plugins` (OMZ install method)
-- Always sources the platform template from the repo (mirrors fish), then `~/.zshrc.local` for machine-specific overrides (proxy, etc.)
+Environment variables are available to scripts; aliases, bindings, zoxide, and
+Starship are initialized only in interactive shells. Fish and Zsh preserve the
+terminal-provided `TERM`; tmux advertises `tmux-256color` inside its panes.
 
-**Platform-specific (Linux only):**
-- bun, Rust/Cargo, nvm, TeX Live, K3S/kubectl
+- `ls`, `ll`, `la`, `lla` use eza when available; `cat` uses bat when available.
+- `g` runs Git, `c` runs Claude, and `vim` runs Neovim when installed.
+- `claude-yolo` runs Claude with permission checks disabled.
+- Fish: `Ctrl-R` searches history, `Ctrl-O` searches files/directories through
+  fzf.fish, and `Ctrl-F` jumps to a repository or nearby directory.
+- Zsh: fzf provides `Ctrl-R`, `Ctrl-T`, and `Alt-C`; `Ctrl-F` is the custom directory jump.
+- Zoxide supplies directory navigation; Starship supplies the prompt.
+- Bass is available in interactive Fish to import Bash environment changes.
 
-### Terminal — Ghostty
+## Machine-local settings
 
-GitHub Dark Default theme. Maple Mono NF CN at 18px, 80% background opacity with blur.
+Fish loads `~/.config/fish/config-local.fish`; Zsh loads `~/.zshrc.local`. Both are
+ignored by Git. The Unix installer creates the Zsh local file only if absent.
+For Fish, copy `config/fish/config-local.fish.example` to `config-local.fish` in
+the same directory, then enable settings appropriate for that machine.
 
-### Editor — Neovim (LazyVim)
+SSH loads `~/.ssh/config.d/*` before shared defaults. Proxy settings are optional:
+copy `ssh/examples/github-proxy.conf` there only if you use that local proxy, and
+install the `connect` executable separately (`brew install connect`). Shared
+configuration does not force a proxy. It enables connection multiplexing,
+keepalives, compression, and hashed known-host entries, leaving algorithm
+selection to OpenSSH defaults. Unix setup creates `~/.ssh/sockets` with mode 700.
+Windows OpenSSH does not provide Unix-style multiplexing; its client determines
+which shared options are supported.
 
-Full-featured Neovim setup via [LazyVim](https://www.lazyvim.org/). Plugins and extras managed through lazy.nvim. Telescope with ripgrep/fd for searching.
+Git retains this owner's identity, aliases, and `ghq` root at `~/repos`. It does
+not rewrite HTTPS URLs or configure delta as a pager. Delta is installed as an
+optional CLI tool. Review `.gitconfig` before reusing this repo under another identity.
 
-**Linting & formatting (JS/TS/HTML/Markdown):**
-- **oxlint** replaces eslint — fast Rust-based linter with zero config
-- **oxfmt** replaces prettier — matching formatter from the same toolchain
-- Python uses `ty` (type checking) and `ruff` (formatting)
+Both installers link `claude/settings.json` and `claude/CLAUDE.md` individually,
+preserving other files in `~/.claude`. These are personal settings: they expect
+`~/.claude/api-key.sh`, a configured API provider, Starship's statusline support,
+and the tmux Claude session-manager plugin for hooks. Credentials are not supplied
+by the installer. Adapt those settings before using Claude on a new machine.
 
-### Multiplexer — tmux
+## Applications
 
-- **Prefix:** `Ctrl-t`
-- **Theme:** [Catppuccin Mocha](https://github.com/catppuccin/tmux) via TPM
-- **Plugins:** `tmux-pain-control`, `tmux-battery`, `tmux-cpu`, `tmux-online-status`
-- **Key bindings:**
-  - `prefix + g` — lazygit in a popup
-  - `prefix + y` — Claude Code in a popup (reuses session per directory)
-  - `prefix + r` — reload config
-  - `Ctrl-Shift-Left/Right` — swap windows
+- **Neovim:** LazyVim with Python, TypeScript, Tailwind, and LaTeX configuration;
+  oxlint/oxfmt for JS/TS and ty/ruff for Python. The tracked lockfile records the
+  existing plugin revisions. Language servers and parsers remain separate downloads.
+- **tmux:** `Ctrl-t` prefix, Catppuccin Mocha theme, `prefix + g` for lazygit,
+  `prefix + y` for the Claude session-manager popup, and `prefix + r` to reload.
+  Starting tmux does not download TPM or plugins.
+- **Ghostty, Zed, Yazi, bat, eza:** personal fonts, themes, and application settings
+  live in their config directories. Theme assets may require separate installation.
+- **Fonts:** Maple Mono NF CN, with a JetBrains Mono fallback in the installer.
 
-### File manager — yazi
+After full setup, restart your terminal. In tmux, press `prefix + I` to install
+plugins explicitly. In Neovim, use `:Lazy restore` to return installed plugins to
+tracked revisions; use `:Lazy sync` when intentionally updating and review the
+resulting lockfile diff.
 
-Fast terminal file manager with Catppuccin Mocha theme. Neovim as default editor. Shows hidden files, natural sort with directories first.
+## Maintenance and validation
 
-### Claude Code
+Fish vendoring follows the upstream [fzf.fish](https://github.com/PatrickF1/fzf.fish)
+and [bass](https://github.com/edc/bass) layouts. The vendor manifest records exact
+commits and SHA-256 hashes. To update one plugin explicitly:
 
-Custom statusline mirroring the Starship prompt: directory path, git branch with status indicators (staged, modified, untracked, ahead/behind), and prompt character — all in Catppuccin Mocha colors via truecolor ANSI escapes.
+```bash
+python3 install/update-fish-vendor.py fzf FULL_40_CHARACTER_COMMIT
+python3 -m unittest discover -s tests -v
+```
 
-### Version control — git
+Commit the updated source, license, and manifest together. Neovim's lockfile is
+tracked; inspect and commit its changes after intentional plugin updates. Oh My
+Zsh, its extra plugins, and TPM use pinned revisions on fresh installation (see
+`install_plugins` in the Unix installer); existing installations are never reset.
+Homebrew/winget manifests select packages, not exact binary versions.
 
-- **Aliases:** `st`, `co`, `ci`, `ca`, `br`, `ps`, `pl`, plus interactive ones using [peco](https://github.com/peco/peco) for fuzzy-selecting files and commits
-- **ghq root:** `~/repos`
-- **URL rewriting:** GitHub/Gitee HTTPS → SSH
-- **Diff viewer:** [delta](https://github.com/dandavison/delta) with syntax highlighting
+Run checks locally:
 
-### SSH
+```bash
+bash -n install/install.sh
+python3 -m unittest discover -s tests -v
+pwsh -NoProfile -File tests/test_windows.ps1
+```
 
-Connection multiplexing for GitHub and homelab hosts, modern key exchange (Curve25519) and cipher preferences, TCP keepalive, hashed known_hosts.
+Install Fish and Zsh to run all shell smoke tests; otherwise those tests are
+reported as skipped. CI installs the required shells on macOS/Linux and runs
+Windows-specific symlink/junction tests on Windows. Tests use temporary directories
+and do not install packages or change the default shell.
 
-### Additional configs
-
-- **bat** — Catppuccin Mocha theme
-- **eza** — Catppuccin Mocha color theme for file listing
-- **Zed** — Catppuccin Espresso theme, Maple Mono font, vim mode, autosave on focus change
-- **Windows** — PowerShell profile, Windows Terminal settings, Starship config
-
-## Design
-
-### Homebrew on both platforms
-
-All CLI tools are installed via Homebrew — on macOS and Linux. Same package names, same versions, no platform-specific package manager glue. The install script bootstraps Homebrew itself on either platform.
-
-### Fish primary, zsh fallback
-
-fish is the daily driver — faster startup, saner defaults, inline autosuggestions out of the box. zsh is kept as a fallback (login shell compatibility, Oh My Zsh plugins, and for systems where fish isn't available).
-
-### Platform dispatch runs first
-
-In both fish and zsh, the platform-specific config (which sets up Homebrew PATH via `brew shellenv`) is sourced at the very top of the base file. This guarantees brew-installed tools are on PATH before any aliases, fzf config, or shell integrations reference them.
-
-### Thin platform files
-
-Platform-specific configs are minimal — Homebrew path setup and tools that genuinely differ between macOS and Linux (bun, Rust, nvm, TeX Live, K3S on Linux). Everything else lives in the shared base file.
-
-## Recommended CLI tools
-
-Installed automatically as extras. All are fast, modern Rust/Go rewrites of classic Unix tools:
-
-| Tool | Replaces | What it does |
-|------|----------|-------------|
-| [delta](https://github.com/dandavison/delta) | `diff` | Syntax-highlighting git diff viewer |
-| [dust](https://github.com/bootandy/dust) | `du` | Intuitive disk usage analyzer |
-| [duf](https://github.com/muesli/duf) | `df` | Colorful disk usage/free viewer |
-| [bottom](https://github.com/ClementTsang/bottom) | `top`/`htop` | Graphical system monitor |
-| [xh](https://github.com/ducaale/xh) | `curl -X` | HTTP client with JSON syntax highlighting |
-
-Other great tools worth checking out (not installed automatically):
-
-| Tool | Replaces | What it does |
-|------|----------|-------------|
-| [rip](https://github.com/nivekuil/rip) | `rm` | Safe delete (sends to trash) |
-| [sd](https://github.com/chmln/sd) | `sed` | Intuitive find-and-replace |
-| [fd](https://github.com/sharkdp/fd) | `find` | Fast recursive file search (already in base install) |
-| [hyperfine](https://github.com/sharkdp/hyperfine) | `time` | Command-line benchmarking |
-| [tokei](https://github.com/XAMPPRocky/tokei) | `cloc` | Blazing-fast code line counter |
-| [zellij](https://github.com/zellij-org/zellij) | `tmux` | Modern terminal multiplexer (Rust) |
-| [atuin](https://github.com/atuinsh/atuin) | `Ctrl-R` | SQLite-backed shell history with sync |
-| [direnv](https://github.com/direnv/direnv) | — | Per-directory env vars and `$PATH` |
-
-### Toolchain
-
-- **Python:** [uv](https://github.com/astral-sh/uv) — fast package manager and venv management
-- **JavaScript:** [bun](https://bun.sh) — fast runtime, bundler, and package manager
-- Both are installed by the install script
-
-## Prerequisites
-
-- **Font:** [Maple Mono NF CN](https://github.com/subframe7536/maple-font) or any [Nerd Font](https://www.nerdfonts.com/) (Maple Mono NF CN is installed by the install script)
-- **Neovim ≥ 0.9.0** with LuaJIT
-- **Git ≥ 2.19.0**
-- For Telescope.nvim: [ripgrep](https://github.com/BurntSushi/ripgrep), [fd](https://github.com/sharkdp/fd)
-- For nvim-treesitter: a C compiler
-
-## Post-install
-
-After running the installer:
-
-1. Restart your terminal or run `exec fish`
-2. In tmux: `prefix + I` to install plugins
-3. In Neovim: `:Lazy sync` to install plugins
-4. Try `yazi` — a fast terminal file manager with image preview
+See [the repository review](docs/repository-review.md) for completed changes and
+verification limits.
