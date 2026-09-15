@@ -1,12 +1,12 @@
 # ── Homebrew ─────────────────────────────────────────────────────────
 # Bootstrap note: zsh itself is installed via `brew install zsh`, so
 # Homebrew must already exist by the time this config runs.  The initial
-# Homebrew installation is handled by ~/.zprofile (zsh/.zprofile).
+# Homebrew installation is handled by install/install.sh.
 # This block only sets up the zsh-side environment (PATH, MANPATH, etc.).
 if [ -f /opt/homebrew/bin/brew ]; then
     eval "$(/opt/homebrew/bin/brew shellenv)"
 elif [ -f /usr/local/bin/brew ]; then
     eval "$(/usr/local/bin/brew shellenv)"
 else
-    echo "⚠  Homebrew not found. Run the zsh bootstrap (~/.zprofile) first." >&2
+    echo "⚠  Homebrew not found. Run install/install.sh first." >&2
 fi

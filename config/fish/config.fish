@@ -1,6 +1,6 @@
 set fish_greeting ""
 
-set -gx TERM xterm-256color
+# Preserve TERM supplied by the terminal emulator or tmux.
 set -gx COLORTERM truecolor
 set -gx CLAUDE_CODE_TMUX_TRUECOLOR true
 
@@ -16,14 +16,23 @@ switch (uname)
         source (dirname (status --current-filename))/config-macos.fish
     case Linux
         source (dirname (status --current-filename))/config-linux.fish
-    case '*'
-        source (dirname (status --current-filename))/config-windows.fish
 end
 
 set LOCAL_CONFIG (dirname (status --current-filename))/config-local.fish
 if test -f $LOCAL_CONFIG
     source $LOCAL_CONFIG
 end
+
+# ── PATH ─────────────────────────────────────────────────────────────
+fish_add_path --global --path ~/bin ~/.local/bin
+
+# ── EZA config ───────────────────────────────────────────────────────
+set -gx EZA_CONFIG_DIR "$HOME/.config/eza"
+
+set -gx EDITOR nvim
+
+# Only environment setup belongs in non-interactive shells.
+status is-interactive; or return
 
 # ── Theme ─────────────────────────────────────────────────────────────
 set -g theme_color_scheme terminal-dark
@@ -43,20 +52,26 @@ alias g git
 alias c claude
 alias claude-yolo "claude --dangerously-skip-permissions"
 command -qv nvim && alias vim nvim
-alias cat="bat"
+if type -q bat
+    alias cat bat
+end
 
 # ── fzf ──────────────────────────────────────────────────────────────
 set -g FZF_PREVIEW_FILE_CMD "bat --style=numbers --color=always --line-range :500"
 set -g FZF_LEGACY_KEYBINDINGS 0
 
-set -gx EDITOR nvim
-
-# ── PATH ─────────────────────────────────────────────────────────────
-set -gx PATH ~/bin $PATH
-set -gx PATH ~/.local/bin $PATH
-
-# ── EZA config ───────────────────────────────────────────────────────
-set -gx EZA_CONFIG_DIR "$HOME/.config/eza"
+# Load complete vendored plugins after platform PATH and local overrides.
+set -l vendor_dir (dirname (status --current-filename))/vendor
+for plugin in fzf bass
+    set -p fish_function_path "$vendor_dir/$plugin/functions"
+    set -p fish_complete_path "$vendor_dir/$plugin/completions"
+    if test "$plugin" = fzf; and not type -q fzf
+        continue
+    end
+    for snippet in "$vendor_dir/$plugin/conf.d/"*.fish
+        source "$snippet"
+    end
+end
 
 # ── Initialize zoxide and starship ────────────────────────────────────
 if type -q zoxide
