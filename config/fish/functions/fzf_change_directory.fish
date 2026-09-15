@@ -1,19 +1,17 @@
-function _fzf_change_directory
-    fzf | perl -pe 's/([ ()])/\\\\$1/g' | read foo
-    if [ $foo ]
-        builtin cd $foo
+function fzf_change_directory --description 'Jump to a repository or nearby directory'
+    type -q fzf; and type -q ghq; or return 1
+    set -l dir (
+        begin
+            printf '%s\n' "$HOME/.config"
+            ghq list -p
+            for candidate in $PWD/*/ $HOME/Developments/*/*/
+                test -d "$candidate"; and string trim --right --chars / -- "$candidate"
+            end
+        end | awk '!seen[$0]++' | fzf
+    )
+    if test -n "$dir"; and test -d "$dir"
+        builtin cd -- "$dir"
         commandline -r ''
         commandline -f repaint
-    else
-        commandline ''
     end
-end
-
-function fzf_change_directory
-    begin
-        echo $HOME/.config
-        find $(ghq root) -maxdepth 4 -type d -name .git | sed 's/\/\.git//'
-        ls -ad */ | perl -pe "s#^#$PWD/#" | grep -v \.git
-        ls -ad $HOME/Developments/*/* | grep -v \.git
-    end | sed -e 's/\/$//' | awk '!a[$0]++' | _fzf_change_directory $argv
 end

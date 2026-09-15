@@ -4,11 +4,7 @@
 export PATH=$HOME/bin:$HOME/.local/bin:$PATH
 
 # ── Terminal / truecolor ─────────────────────────────────────────────
-# Mirrors config/fish/config.fish so tmux + Claude Code render identically
-# regardless of shell. Don't clobber tmux's own TERM inside a tmux pane.
-if [ -z "${TMUX:-}" ]; then
-    export TERM="xterm-256color"
-fi
+# Preserve TERM supplied by the terminal emulator or tmux.
 export COLORTERM="truecolor"
 export CLAUDE_CODE_TMUX_TRUECOLOR="true"
 
@@ -30,45 +26,26 @@ esac
 unset ZSH_ROOT
 [ -f ~/.zshrc.local ] && source ~/.zshrc.local
 
-# ── Oh My Zsh ─────────────────────────────────────────────────────────
-# Path to your Oh My Zsh installation.
-export ZSH="$HOME/.oh-my-zsh"
+export EDITOR="nvim"
+export EZA_CONFIG_DIR="$HOME/.config/eza"
 
-# Starship renders the prompt (shared with fish/tmux), so the theme is unused.
+# Interactive integrations never run during script execution.
+[[ -o interactive ]] || return 0
+
+# Installed explicitly by install/install.sh --plugins-only.
+export ZSH="${ZSH:-$HOME/.oh-my-zsh}"
 ZSH_THEME=""
 DISABLE_UNTRACKED_FILES_DIRTY="true"
-plugins=(git extract copypath copyfile web-search zsh-autosuggestions zsh-syntax-highlighting)
-
-# Auto-install oh-my-zsh if not present
-if [ ! -d "$ZSH" ]; then
-  echo "oh-my-zsh not found. Installing..."
-  sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
-fi
-
-# Auto-install the plugins OMZ doesn't bundle (zsh-autosuggestions,
-# zsh-syntax-highlighting) by cloning them into the OMZ custom plugins dir,
-# per each plugin's own install instructions. OMZ's loader sources
-# `${ZSH_CUSTOM}/plugins/<plugin>/<plugin>.plugin.zsh`, which these repos ship.
-ZSH_CUSTOM_DIR="${ZSH_CUSTOM:-$ZSH/custom}"
-if command -v git >/dev/null 2>&1; then
-    mkdir -p "$ZSH_CUSTOM_DIR/plugins"
-    _omz_plugin() {
-        local repo="$1" name="$2"
-        if [ ! -d "$ZSH_CUSTOM_DIR/plugins/$name" ]; then
-            echo "oh-my-zsh: installing plugin '$name'"
-            git clone "$repo" "$ZSH_CUSTOM_DIR/plugins/$name" >/dev/null 2>&1 \
-                || echo "⚠  Failed to install plugin '$name'" >&2
-        fi
-    }
-    _omz_plugin https://github.com/zsh-users/zsh-autosuggestions.git zsh-autosuggestions
-    _omz_plugin https://github.com/zsh-users/zsh-syntax-highlighting.git zsh-syntax-highlighting
-    unset _omz_plugin
-else
-    echo "⚠  git not found; cannot auto-install zsh plugins." >&2
-fi
-unset ZSH_CUSTOM_DIR
-
-source "$ZSH/oh-my-zsh.sh"
+DISABLE_AUTO_UPDATE="true"
+zstyle ':omz:update' mode disabled
+plugins=(git extract copypath copyfile web-search)
+for plugin in zsh-autosuggestions zsh-syntax-highlighting; do
+    if [ -f "${ZSH_CUSTOM:-$ZSH/custom}/plugins/$plugin/$plugin.plugin.zsh" ]; then
+        plugins+=("$plugin")
+    fi
+done
+unset plugin
+[ ! -f "$ZSH/oh-my-zsh.sh" ] || source "$ZSH/oh-my-zsh.sh"
 
 # ── Aliases (mirror config/fish/config.fish) ─────────────────────────
 # eza replaces ls
@@ -78,16 +55,13 @@ if command -v eza >/dev/null 2>&1; then
     alias ll="eza -l -g --icons"
     alias lla="ll -a"
 fi
-alias cat="bat"
+command -v bat >/dev/null 2>&1 && alias cat="bat"
 command -v nvim >/dev/null 2>&1 && alias vim="nvim"
 
 # Utility aliases shared with fish
 alias g="git"
 alias c="claude"
 alias "claude-yolo"="claude --dangerously-skip-permissions"
-
-# ── Editor ───────────────────────────────────────────────────────────
-export EDITOR="nvim"
 
 # ── fzf ──────────────────────────────────────────────────────────────
 export FZF_PREVIEW_FILE_CMD="bat --style=numbers --color=always --line-range :500"

@@ -1,0 +1,5 @@
+# Copy to ~/.config/fish/config-local.fish; this file is machine-specific.
+# Uncomment only when the local proxy is running:
+# set -gx https_proxy "http://127.0.0.1:8234"
+# set -gx http_proxy "http://127.0.0.1:8234"
+# set -gx no_proxy "localhost,127.0.0.1,::1"

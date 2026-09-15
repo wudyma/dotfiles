@@ -1,4 +1,4 @@
-#Requires -Version 7.0
+#Requires -Version 7.2
 <#
 .SYNOPSIS
     Install dotfiles and dependencies on Windows.
@@ -12,11 +12,13 @@
 
 param(
     [switch]$NoFonts,
-    [switch]$DryRun
+    [switch]$DryRun,
+    [switch]$LinksOnly
 )
 
 $ErrorActionPreference = "Stop"
 $DotfilesDir = Split-Path $PSScriptRoot -Parent
+$script:InstallFailures = [System.Collections.Generic.List[string]]::new()
 
 # ─── helpers ─────────────────────────────────────────────────────────────────
 function Write-Header($msg) {
@@ -29,24 +31,61 @@ function Write-Ok { Write-Host "    ✓" -ForegroundColor Green }
 function Write-Warn($msg) { Write-Host "    ⚠ $msg" -ForegroundColor Yellow }
 function Write-Info($msg) { Write-Host "    $msg" -ForegroundColor Gray }
 
-function Symlink-File($src, $dst) {
-    if ($DryRun) { Write-Info "[dry-run] link $src → $dst"; return }
+function Register-Failure($message) {
+    $script:InstallFailures.Add($message)
+    Write-Warn $message
+}
 
-    if (Test-Path $dst) {
-        $item = Get-Item $dst -ErrorAction SilentlyContinue
-        if ($item.LinkType -eq "SymbolicLink" -and (Get-Item $item.Target).FullName -eq (Resolve-Path $src).Path) {
+function Get-ExistingItem($path) {
+    # Get-Item sees dangling symlinks as well as files, directories and junctions.
+    Get-Item -LiteralPath $path -Force -ErrorAction SilentlyContinue
+}
+
+function Backup-Existing($dst) {
+    if ($null -eq (Get-ExistingItem $dst)) { return }
+    $backup = "${dst}.bak"
+    $suffix = 0
+    while ($null -ne (Get-ExistingItem $backup)) {
+        $suffix++
+        $backup = "${dst}.bak.$suffix"
+    }
+    Write-Warn "$dst exists, backing up to $backup"
+    if (-not $DryRun) {
+        # Rename within the same parent; never traverse directory links/junctions.
+        Rename-Item -LiteralPath $dst -NewName (Split-Path $backup -Leaf)
+    }
+}
+
+function Symlink-File($src, $dst) {
+    if (-not (Test-Path -LiteralPath $src)) { throw "Missing symlink source: $src" }
+    $item = Get-ExistingItem $dst
+    if ($null -ne $item -and $item.LinkType -eq "SymbolicLink") {
+        $target = $item.ResolveLinkTarget($true)
+        if ($null -ne $target -and $target.FullName -eq (Get-Item -LiteralPath $src).FullName) {
             Write-Info "already linked: $dst"
             return
         }
-        Write-Warn "$dst exists, backing up to ${dst}.bak"
-        Move-Item $dst "${dst}.bak" -Force
     }
-    # Ensure parent exists
+    Backup-Existing $dst
+    if ($DryRun) { Write-Info "[dry-run] link $src → $dst"; return }
     $parent = Split-Path $dst -Parent
-    if ($parent -and !(Test-Path $parent)) {
-        New-Item -ItemType Directory -Path $parent -Force | Out-Null
+    New-Item -ItemType Directory -Path $parent -Force | Out-Null
+    New-Item -ItemType SymbolicLink -Path $dst -Target $src | Out-Null
+    Write-Ok
+}
+
+function Copy-Config($src, $dst) {
+    if (-not (Test-Path -LiteralPath $src -PathType Leaf)) { throw "Missing copy source: $src" }
+    $item = Get-ExistingItem $dst
+    if ($null -ne $item -and -not $item.PSIsContainer -and -not $item.LinkType -and
+        (Get-FileHash -LiteralPath $src).Hash -eq (Get-FileHash -LiteralPath $dst).Hash) {
+        Write-Info "already copied: $dst"
+        return
     }
-    New-Item -ItemType SymbolicLink -Path $dst -Target $src -Force | Out-Null
+    Backup-Existing $dst
+    if ($DryRun) { Write-Info "[dry-run] copy $src → $dst"; return }
+    New-Item -ItemType Directory -Path (Split-Path $dst -Parent) -Force | Out-Null
+    Copy-Item -LiteralPath $src -Destination $dst
     Write-Ok
 }
 
@@ -103,7 +142,7 @@ function Install-Packages {
         } else {
             winget install --id $($pkg.id) --exact --silent --accept-package-agreements --accept-source-agreements
             if ($LASTEXITCODE -ne 0) {
-                Write-Warn "failed to install $($pkg.name) — continuing"
+                Register-Failure "failed to install $($pkg.name) — continuing"
             } else {
                 Write-Ok
             }
@@ -138,7 +177,7 @@ function Install-ManualTools {
         Write-Step "installing bun"
         if (-not $DryRun) {
             powershell -c "irm bun.sh/install.ps1 | iex"
-            Write-Ok
+            if ($LASTEXITCODE -ne 0) { Register-Failure "failed to install bun" } else { Write-Ok }
         }
     } else {
         Write-Info "bun already installed"
@@ -149,7 +188,7 @@ function Install-ManualTools {
         Write-Step "installing uv"
         if (-not $DryRun) {
             powershell -c "irm astral.sh/uv/install.ps1 | iex"
-            Write-Ok
+            if ($LASTEXITCODE -ne 0) { Register-Failure "failed to install uv" } else { Write-Ok }
         }
     } else {
         Write-Info "uv already installed"
@@ -164,7 +203,7 @@ function Install-ManualTools {
             } else {
                 npm install -g @anthropic-ai/claude-code
             }
-            Write-Ok
+            if ($LASTEXITCODE -ne 0) { Register-Failure "failed to install Claude Code" } else { Write-Ok }
         }
     } else {
         Write-Info "claude already installed"
@@ -194,7 +233,7 @@ function Install-RecommendedTools {
         } else {
             winget install --id $($pkg.id) --exact --silent --accept-package-agreements --accept-source-agreements
             if ($LASTEXITCODE -ne 0) {
-                Write-Warn "failed to install $($pkg.name) — continuing"
+                Register-Failure "failed to install $($pkg.name) — continuing"
             } else {
                 Write-Ok
             }
@@ -204,6 +243,7 @@ function Install-RecommendedTools {
 
 # ─── Nerd Font ───────────────────────────────────────────────────────────────
 function Install-NerdFont {
+    if ($DryRun) { Write-Info "[dry-run] would install Maple Mono NF CN font"; return }
     if ($NoFonts) { Write-Info "skipping fonts (--NoFonts)"; return }
     Write-Header "Installing Maple Mono NF CN (Nerd Font with Chinese)"
 
@@ -246,57 +286,59 @@ function Install-NerdFont {
 function Link-Dotfiles {
     Write-Header "Linking dotfiles"
 
-    $home = $env:USERPROFILE
+    $userHome = $env:USERPROFILE
 
     # Git config — copy (git on Windows sometimes has trouble with symlinks)
     $gitSrc = Join-Path $DotfilesDir ".gitconfig"
-    $gitDst = Join-Path $home ".gitconfig"
-    if ($DryRun) {
-        Write-Info "[dry-run] copy $gitSrc → $gitDst"
-    } elseif (-not (Test-Path $gitDst) -or (Get-Item $gitDst).LinkType -ne "SymbolicLink") {
-        Write-Step "copying .gitconfig"
-        Copy-Item $gitSrc $gitDst -Force
-        Write-Ok
-    }
+    $gitDst = Join-Path $userHome ".gitconfig"
+    Copy-Config $gitSrc $gitDst
 
     # SSH config
     $sshSrc = Join-Path $DotfilesDir "ssh\config"
-    $sshDst = Join-Path $home ".ssh\config"
+    $sshDst = Join-Path $userHome ".ssh\config"
     Symlink-File $sshSrc $sshDst
 
+    if (-not $DryRun) {
+        New-Item -ItemType Directory -Path (Join-Path $userHome ".ssh/config.d") -Force | Out-Null
+    }
+
+    # Claude config files only; credentials and local state remain separate.
+    Symlink-File (Join-Path $DotfilesDir "claude/settings.json") (Join-Path $userHome ".claude/settings.json")
+    Symlink-File (Join-Path $DotfilesDir "claude/CLAUDE.md") (Join-Path $userHome ".claude/CLAUDE.md")
+
     # PowerShell profile
-    $pwshProfileDst = Join-Path $home "Documents\PowerShell\Microsoft.PowerShell_profile.ps1"
+    $pwshProfileDst = Join-Path $userHome "Documents\PowerShell\Microsoft.PowerShell_profile.ps1"
     $pwshProfileSrc = Join-Path $DotfilesDir "config\powershell\Microsoft.PowerShell_profile.ps1"
     Symlink-File $pwshProfileSrc $pwshProfileDst
 
     # Neovim (AppData\Local\nvim on Windows)
     $nvimSrc  = Join-Path $DotfilesDir "config\nvim"
-    $nvimDst  = Join-Path $home "AppData\Local\nvim"
+    $nvimDst  = Join-Path $userHome "AppData\Local\nvim"
     Symlink-File $nvimSrc $nvimDst
 
     # Zed
     $zedSrc = Join-Path $DotfilesDir "config\zed"
-    $zedDst = Join-Path $home ".config\zed"
+    $zedDst = Join-Path $userHome ".config\zed"
     Symlink-File $zedSrc $zedDst
 
     # Starship
-    $starshipSrc = Join-Path $DotfilesDir "config\starship_windows.toml"
-    $starshipDst = Join-Path $home ".config\starship.toml"
+    $starshipSrc = Join-Path $DotfilesDir "config\starship.toml"
+    $starshipDst = Join-Path $userHome ".config\starship.toml"
     Symlink-File $starshipSrc $starshipDst
 
     # Windows Terminal (copy to LocalState, not symlink — Terminal expects it there)
     $wtSrc = Join-Path $DotfilesDir "config\windows_terminal\settings.json"
-    $wtDst = Join-Path $home "AppData\Local\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState\settings.json"
+    $wtDst = Join-Path $userHome "AppData\Local\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState\settings.json"
     if (Test-Path (Split-Path $wtDst -Parent)) {
         Write-Step "copying Windows Terminal settings"
-        if (-not $DryRun) { Copy-Item $wtSrc $wtDst -Force; Write-Ok }
+        Copy-Config $wtSrc $wtDst
     } else {
         Write-Info "Windows Terminal package dir not found; skipping settings.json"
     }
 
     # Yazi file manager
     $yaziSrc = Join-Path $DotfilesDir "config\yazi"
-    $yaziDst = Join-Path $home "AppData\Roaming\yazi\config"
+    $yaziDst = Join-Path $userHome "AppData\Roaming\yazi\config"
     Symlink-File $yaziSrc $yaziDst
 }
 
@@ -304,22 +346,17 @@ function Link-Dotfiles {
 function Write-PostInstall {
     Write-Header "Post-install"
 
-    if (-not $DryRun) {
-        mkdir ~/repos -Force -ErrorAction SilentlyContinue | Out-Null
+    if (-not $DryRun -and -not $LinksOnly) {
+        New-Item -ItemType Directory -Path (Join-Path $env:USERPROFILE "repos") -Force | Out-Null
     }
 
-    Write-Host ""
-    Write-Host "  ┌─────────────────────────────────────────────────────────┐"
-    Write-Host "  │  ✓  Dotfiles installed!                                 │"
-    Write-Host "  │                                                         │"
-    Write-Host "  │  Next steps:                                            │"
-    Write-Host "  │  • Restart your terminal                                │"
-    Write-Host "  │  • In nvim: :Lazy sync to install plugins               │"
-    Write-Host "  │  • Set Windows Terminal font to:                        │"
-    Write-Host "  │      Maple Mono NF CN                                    │"
-    Write-Host "  │  • Try new tools: yazi (file manager), delta (git diff) │"
-    Write-Host "  └─────────────────────────────────────────────────────────┘"
-    Write-Host ""
+    if ($script:InstallFailures.Count -gt 0) {
+        Write-Warn "Setup completed with $($script:InstallFailures.Count) failure(s):"
+        $script:InstallFailures | ForEach-Object { Write-Warn $_ }
+        throw "Dotfiles installation incomplete"
+    }
+    if ($DryRun) { Write-Info "Preview complete; no changes made." }
+    else { Write-Info "Requested setup completed. Restart your terminal." }
 }
 
 # ─── main ────────────────────────────────────────────────────────────────────
@@ -328,13 +365,15 @@ function Main {
     Write-Host "  Dotfiles installer for Windows" -ForegroundColor Magenta
     Write-Host "  ───────────────────────────────" -ForegroundColor Magenta
 
-    Assert-Winget
-    Install-Packages
-    Install-ManualTools
-    Install-RecommendedTools
-    Install-NerdFont
+    if (-not $LinksOnly) {
+        if (-not $DryRun) { Assert-Winget }
+        Install-Packages
+        Install-ManualTools
+        Install-RecommendedTools
+        Install-NerdFont
+    }
     Link-Dotfiles
     Write-PostInstall
 }
 
-Main
+if ($MyInvocation.InvocationName -ne '.') { Main }
