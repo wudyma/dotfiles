@@ -3,19 +3,15 @@ theme = Github Dark Default
 font-family = Maple Mono NF CN
 font-size = 18
 
-background-opacity = 0.9
-background-blur = true
+background-opacity = 0.85
+background-blur-radius = 20
 
 cursor-style = block
-cursor-style-blink = false
-cursor-color = cell-foreground
-cursor-text = cell-background
-shell-integration-features = no-cursor
+cursor-style-blink = true
 
-macos-titlebar-style = transparent
 macos-option-as-alt = true
 
-window-padding-x = 10
-window-padding-y = 10
-window-padding-balance = true
+window-padding-x = 8
+window-padding-y = 8
 
+shell-integration-features = ssh-env,ssh-terminfo
