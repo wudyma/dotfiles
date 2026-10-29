@@ -39,3 +39,6 @@
 [user]
   name = Zheng Ma
   email = mazhengcn@outlook.com
+	signingkey = /home/zheng/.ssh/id_ed25519.pub
+[gpg]
+	format = ssh
