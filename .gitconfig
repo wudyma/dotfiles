@@ -34,8 +34,6 @@
   smudge = git-lfs smudge -- %f
   required = true
   process = git-lfs filter-process
-[ghq]
-  root = ~/repos
 [user]
   name = Zheng Ma
   email = mazhengcn@outlook.com
