@@ -1,42 +1,99 @@
+[user]
+  name = Zheng Ma
+  email = zhengma@sjtu.edu.cn
+  signingKey = ~/.ssh/id_ed25519.pub
+[gpg]
+  format = ssh
+[commit]
+  gpgSign = true
+  # Show the staged diff in the commit-message editor.
+  verbose = true
+
+# Prefer SSH for common Git hosts, including HTTPS clone/submodule URLs.
+[url "git@github.com:"]
+  insteadOf = https://github.com/
+[url "git@gist.github.com:"]
+  insteadOf = https://gist.github.com/
+[url "git@gitlab.com:"]
+  insteadOf = https://gitlab.com/
+[ghq]
+  root = ~/repos
+
+[init]
+  defaultBranch = main
+[fetch]
+  prune = true
+  # Speed up history traversal after fetching new objects.
+  writeCommitGraph = true
+[pull]
+  # Resolve diverged history explicitly with merge or rebase.
+  ff = only
+[push]
+  default = simple
+  autoSetupRemote = true
+[merge]
+  conflictStyle = zdiff3
+[rerere]
+  # Reuse recorded conflict resolutions; review and stage them yourself.
+  enabled = true
+  autoUpdate = false
+[rebase]
+  autoSquash = true
+  # Use "drop" to remove a commit intentionally from the rebase todo list.
+  missingCommitsCheck = error
+[diff]
+  algorithm = histogram
+  renames = true
+  colorMoved = zebra
+  submodule = log
+[status]
+  submoduleSummary = 5
+[branch]
+  sort = -committerdate
+[tag]
+  sort = version:refname
+[grep]
+  lineNumber = true
+[help]
+  # Ask before executing a suggested correction for a mistyped command.
+  autoCorrect = prompt
+[core]
+  quotePath = false
 [color]
-  status = auto
-  diff = auto
-  branch = auto
-  interactive = auto
-  grep = auto
   ui = auto
+
 [alias]
-  a = "!git status --short | peco | awk '{print $2}' | xargs git add"
+  a = add -p
   d = diff
+  ds = diff --staged
   co = checkout
+  sw = switch
   ci = commit
   ca = commit -a
-  ps = "!git push origin $(git rev-parse --abbrev-ref HEAD)"
-  pl = "!git pull origin $(git rev-parse --abbrev-ref HEAD)"
+  fixup = commit --fixup
+  ri = rebase --interactive
+  ps = push
+  pl = pull
   st = status
   br = branch
   ba = branch -a
   bm = branch --merged
   bn = branch --no-merged
-  df = "!git hist | peco | awk '{print $2}' | xargs -I {} git diff {}^ {}"
-  hist = log --pretty=format:\"%Cgreen%h %Creset%cd %Cblue[%cn] %Creset%s%C(yellow)%d%C(reset)\" --graph --date=relative --decorate --all
-  llog = log --graph --name-status --pretty=format:\"%C(red)%h %C(reset)(%cd) %C(green)%an %Creset%s %C(yellow)%d%Creset\" --date=relative
-  open = "!gh browse"
+  df = show
+  hist = log --graph --date=relative --decorate --all --format='%Cgreen%h%Creset %cd %Cblue[%cn]%Creset %s%C(yellow)%d%Creset'
+  llog = log --graph --name-status --date=relative --format='%C(red)%h%Creset (%cd) %C(green)%an%Creset %s %C(yellow)%d%Creset'
+  find = log -p -S
   type = cat-file -t
   dump = cat-file -p
-  find = "!f() { git log --pretty=format:\"%h %cd [%cn] %s%d\" --date=relative -S'pretty' -S\"$@\" | peco | awk '{print $1}' | xargs -I {} git diff {}^ {}; }; f"
-  # edit conflicted file on merge
-  edit-unmerged = "!f() { git ls-files --unmerged | cut -f2 | sort -u ; }; vim `f`"
-  # add conflicted file on merge
-  add-unmerged = "!f() { git ls-files --unmerged | cut -f2 | sort -u ; }; git add `f`"
+  unmerged = diff --name-only --diff-filter=U
+  add-unmerged = "!git diff --name-only --diff-filter=U -z | git --literal-pathspecs add --pathspec-from-file=- --pathspec-file-nul"
+
 [filter "lfs"]
   clean = git-lfs clean -- %f
   smudge = git-lfs smudge -- %f
   required = true
   process = git-lfs filter-process
-[user]
-  name = Zheng Ma
-  email = mazhengcn@outlook.com
-	signingkey = /home/zheng/.ssh/id_ed25519.pub
-[gpg]
-	format = ssh
+
+# Optional machine-specific overrides; keep this include last.
+[include]
+  path = ~/.gitconfig.local

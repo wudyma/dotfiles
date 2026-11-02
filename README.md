@@ -110,9 +110,42 @@ selection to OpenSSH defaults. Unix setup creates `~/.ssh/sockets` with mode 700
 Windows OpenSSH does not provide Unix-style multiplexing; its client determines
 which shared options are supported.
 
-Git retains this owner's identity, aliases, and `ghq` root at `~/repos`. It does
-not rewrite HTTPS URLs or configure delta as a pager. Delta is installed as an
-optional CLI tool. Review `.gitconfig` before reusing this repo under another identity.
+Git uses `Zheng Ma <zhengma@sjtu.edu.cn>`, stores `ghq` repositories in `~/repos`,
+and rewrites GitHub, Gist, and GitLab HTTPS Git URLs to SSH. Git operations and
+aliases do not depend on `gh`. Commits are signed with SSH using
+`~/.ssh/id_ed25519.pub`; the corresponding private key must be available locally
+or through `ssh-agent`. On a new machine, set up that key before committing.
+For GitHub's Verified badge, add the public key to the account as a **signing key**
+as well as an authentication key, and verify the commit email on that account.
+
+New repositories start on `main`. Fetch prunes deleted remote branches; pull
+allows only fast-forward updates, so diverged branches require an explicit merge
+or rebase. The first push sets the upstream automatically. `git a` stages patches,
+`git ds` shows staged changes, `git df <commit>` shows a commit, and
+`git find <text>` searches changes to the number of occurrences of that text.
+`git unmerged` lists conflicted paths; `git add-unmerged` stages those paths after
+you resolve them.
+
+The commit editor includes the staged diff for review. Diffs highlight moved code
+and summarize submodule commits; status shows up to five submodule commits.
+Branches list the most recently committed first, tags sort by version, and
+`git grep` includes line numbers. Fetch also updates the commit graph to help
+history traversal. Mistyped commands offer an interactive correction prompt.
+
+`rerere` remembers conflict resolutions and reapplies them to matching conflicts,
+leaving the index unmerged for you to review and stage. Interactive rebase enables
+autosquash: use `git fixup <commit>` followed by `git ri <base>` to fold fixes into
+their target commits. Removing a todo line stops the rebase with an error; use
+`drop` when intentionally discarding a commit. These settings follow the
+[Git configuration reference](https://git-scm.com/docs/git-config) and
+[rerere documentation](https://git-scm.com/docs/git-rerere).
+
+Machine-specific overrides go in `~/.gitconfig.local`, loaded last. For local SSH
+signature verification, maintain a trusted signers file outside this repository
+(each line: `email namespaces="git" ssh-ed25519 <public-key-data>`) and set
+`gpg.ssh.allowedSignersFile` to its path in that local config. Delta remains an
+optional CLI tool, without a configured pager. Review `.gitconfig` before reusing
+this repo under another identity.
 
 Both installers link `claude/settings.json` and `claude/CLAUDE.md` individually,
 preserving other files in `~/.claude`. These are personal settings: they expect
