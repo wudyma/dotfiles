@@ -21,6 +21,13 @@ class VendorTests(unittest.TestCase):
                 self.assertEqual(hashlib.sha256((root / name / file).read_bytes()).hexdigest(), expected, file)
             self.assertTrue(any(file.lower().startswith('license') for file in plugin['files']))
 
+    def test_lockfile_is_not_ignored(self):
+        result = subprocess.run(
+            ['git', 'check-ignore', '--no-index', 'config/nvim/lazy-lock.json'],
+            cwd=REPO, capture_output=True, text=True,
+        )
+        self.assertEqual(result.returncode, 1, result.stdout + result.stderr)
+
     def test_neovim_lockfile_has_pinned_commits(self):
         lock = json.loads((REPO / 'config/nvim/lazy-lock.json').read_text())
         self.assertIn('LazyVim', lock)
@@ -52,8 +59,9 @@ class ShellTests(unittest.TestCase):
         self.env = dict(os.environ, HOME=str(self.root), XDG_CONFIG_HOME=str(self.config),
                         XDG_DATA_HOME=str(self.root / 'data'), XDG_CACHE_HOME=str(self.root / 'cache'),
                         PATH=f'{self.bin}:/usr/bin:/bin', TERM='xterm-ghostty',
+                        LANG='C', LC_CTYPE='C',
                         DOTFILES_TEST_MARKER=str(self.marker), ZDOTDIR=str(self.root / 'zsh'))
-        for name in ('ZSH', 'ZSH_CUSTOM', 'BASH_ENV', 'ENV', 'TMUX', 'CI'):
+        for name in ('ZSH', 'ZSH_CUSTOM', 'BASH_ENV', 'ENV', 'TMUX', 'CI', 'LC_ALL'):
             self.env.pop(name, None)
 
     def run_shell(self, shell, code, interactive=False):
@@ -88,6 +96,68 @@ class ShellTests(unittest.TestCase):
         result = self.run_shell('zsh', 'source "$ZDOTDIR/.zshrc"; printf "%s %s" "$TERM" "$EDITOR"')
         self.assertEqual(result.stdout, 'xterm-ghostty nvim')
         self.assertFalse(self.marker.exists())
+
+    def test_shells_preserve_locale_and_local_environment_overrides(self):
+        (self.config / 'fish/config-local.fish').write_text(
+            'set -gx EDITOR local-editor\nset -gx EZA_CONFIG_DIR /local/eza\n')
+        (self.root / '.zshrc.local').write_text(
+            'export EDITOR=local-editor\nexport EZA_CONFIG_DIR=/local/eza\n')
+        for shell, code in (
+            ('fish', 'source "$XDG_CONFIG_HOME/fish/config.fish"; '
+             'printf "%s|%s|%s|%s" "$LANG" "$LC_CTYPE" "$EDITOR" "$EZA_CONFIG_DIR"'),
+            ('zsh', 'source "$ZDOTDIR/.zshrc"; '
+             'printf "%s|%s|%s|%s" "$LANG" "$LC_CTYPE" "$EDITOR" "$EZA_CONFIG_DIR"'),
+        ):
+            with self.subTest(shell=shell):
+                result = self.run_shell(shell, code)
+                self.assertEqual(result.stdout, 'C|C|local-editor|/local/eza')
+                self.assertEqual(result.stderr, '')
+
+    def test_reloading_shell_config_does_not_duplicate_paths(self):
+        for directory in ('bin', '.local/bin', '.bun/bin', '.cargo/bin'):
+            (self.root / directory).mkdir(parents=True, exist_ok=True)
+        for name in ('starship', 'zoxide'):
+            (self.bin / name).unlink()
+        for shell, code in (
+            ('fish', 'source "$XDG_CONFIG_HOME/fish/config.fish"; '
+             'source "$XDG_CONFIG_HOME/fish/config.fish"; '
+             'printf "%s\\n" $PATH; printf "FUNCTIONS\\n"; printf "%s\\n" $fish_function_path'),
+            ('zsh', 'source "$ZDOTDIR/.zshrc"; source "$ZDOTDIR/.zshrc"; '
+             'printf "%s\\n" "${path[@]}"'),
+        ):
+            with self.subTest(shell=shell):
+                result = self.run_shell(shell, code, interactive=True)
+                paths = result.stdout.split('FUNCTIONS\n')[0].splitlines()
+                self.assertEqual(len(paths), len(set(paths)), paths)
+                for directory in ('.local/bin', '.bun/bin', '.cargo/bin'):
+                    self.assertIn(str(self.root / directory), paths)
+                if shell == 'fish':
+                    functions = result.stdout.split('FUNCTIONS\n')[1].splitlines()
+                    self.assertEqual(len(functions), len(set(functions)), functions)
+
+    def test_zsh_directory_picker_preserves_special_characters(self):
+        # Exercise the widget's directory collection without running a real ZLE.
+        directory = self.root / 'project [draft] with spaces'
+        directory.mkdir()
+        for name, body in {
+            'ghq': 'printf "%s\\n" "$PICK_DIRECTORY"',
+            'fzf': 'while IFS= read -r line; do\n'
+                   '  if [ "$line" = "$PICK_DIRECTORY" ]; then printf "%s\\n" "$line"; fi\n'
+                   'done',
+        }.items():
+            stub = self.bin / name
+            stub.write_text('#!/bin/sh\n' + body + '\n')
+            stub.chmod(0o755)
+        for name in ('starship', 'zoxide'):
+            (self.bin / name).unlink()
+        self.env['PICK_DIRECTORY'] = str(directory)
+        result = self.run_shell('zsh', '''
+            source "$ZDOTDIR/.zshrc"
+            function zle() { :; }
+            fzf_change_directory
+            printf '%s' "$PWD"
+        ''', interactive=True)
+        self.assertEqual(result.stdout, str(directory))
 
     def test_fish_fresh_clone_has_complete_fzf_bindings(self):
         # Init tools are unavailable; only fzf's presence is needed to load bindings.

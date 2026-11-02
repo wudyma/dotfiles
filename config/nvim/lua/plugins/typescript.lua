@@ -21,7 +21,7 @@ return {
     },
   },
 
-  -- oxlint: fast linter for JS/TS/HTML/Markdown (replaces eslint)
+  -- oxlint handles JavaScript/TypeScript, including JSX/TSX.
   {
     "mfussenegger/nvim-lint",
     optional = true,
@@ -31,8 +31,6 @@ return {
         javascriptreact = { "oxlint" },
         typescript = { "oxlint" },
         typescriptreact = { "oxlint" },
-        html = { "oxlint" },
-        markdown = { "oxlint" },
       },
     },
   },

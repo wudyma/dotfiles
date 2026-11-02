@@ -6,19 +6,20 @@
 # This prefix is required for precompiled binary bottles — custom prefixes
 # like ~/.linuxbrew force everything to build from source (unsupported).
 if test -f /home/linuxbrew/.linuxbrew/bin/brew
-    eval (/home/linuxbrew/.linuxbrew/bin/brew shellenv)
+    /home/linuxbrew/.linuxbrew/bin/brew shellenv fish | source
 else if test -f $HOME/.linuxbrew/bin/brew
-    eval ($HOME/.linuxbrew/bin/brew shellenv)
-else
+    $HOME/.linuxbrew/bin/brew shellenv fish | source
+else if status is-interactive
     echo "⚠  Homebrew not found. Install it first, then brew install fish." >&2
 end
 
-# ── Rust / Cargo ─────────────────────────────────────────────────────
-set -gx PATH "$HOME/.cargo/bin" $PATH
-
 # ── TeX Live ─────────────────────────────────────────────────────────
-set -gx PATH "$HOME/.local/texlive/2026/bin/aarch64-linux" $PATH
+fish_add_path --global --path "$HOME/.local/texlive/2026/bin/"(uname -m)"-linux"
 
 # ── K3S / Kubernetes ─────────────────────────────────────────────────
-set -gx KUBECONFIG "$HOME/.config/k3s/k3s.yaml"
-alias k="kubectl"
+if not set -q KUBECONFIG; and test -f "$HOME/.config/k3s/k3s.yaml"
+    set -gx KUBECONFIG "$HOME/.config/k3s/k3s.yaml"
+end
+if status is-interactive
+    alias k kubectl
+end

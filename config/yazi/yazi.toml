@@ -1,10 +1,10 @@
 # yazi — main config
 # https://yazi-rs.github.io/docs/configuration/yazi
 
-[manager]
+[mgr]
 # Show hidden files by default
 show_hidden = true
-# Sort: alphabetical (default), natural, modified, created, size
+# Sort naturally: 1.md, 2.md, 10.md.
 sort_by = "natural"
 sort_dir_first = true
 sort_reverse = false
@@ -15,22 +15,17 @@ ratio = [1, 3, 4]
 # Image preview max size
 max_width = 1000
 max_height = 1000
-# Enable syntax highlighting for code
-syntax_highlighting = true
 
 [opener]
 # Open text files in Neovim in the same terminal
 edit = [
-    { run = 'nvim "$@"', block = true, for = "unix" },
-]
-# Open current directory in Neovim (oil.nvim or netrw)
-play = [
-    { run = 'nvim "$@"', block = true, for = "unix" },
+    { run = 'nvim %s', block = true, for = "unix" },
+    { run = 'nvim %s', block = true, for = "windows" },
 ]
 
 [open]
 # Use system defaults for these file types
-rules = [
+prepend_rules = [
     { mime = "image/*", use = "open" },
     { mime = "video/*", use = "open" },
     { mime = "audio/*", use = "open" },

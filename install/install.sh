@@ -40,9 +40,9 @@ detect_os() {
         *)      echo "Unsupported OS: $(uname -s)"; exit 1 ;;
     esac
     case "$(uname -m)" in
-        x86_64)        ARCH="x86_64" ; ARCH_ALT="amd64" ;;
-        aarch64|arm64) ARCH="arm64"  ; ARCH_ALT="arm64" ;;
-        *)             ARCH="$(uname -m)"; ARCH_ALT="$(uname -m)" ;;
+        x86_64)        ARCH="x86_64" ;;
+        aarch64|arm64) ARCH="arm64" ;;
+        *)             ARCH="$(uname -m)" ;;
     esac
 }
 
@@ -98,6 +98,22 @@ symlink() {
 
 # ─── Homebrew ────────────────────────────────────────────────────────────────
 ensure_homebrew() {
+    local brew_bin brew_env installer
+    # An installed brew may be absent from PATH in a fresh or non-login shell.
+    if ! command -v brew &>/dev/null; then
+        for brew_bin in /opt/homebrew/bin/brew /usr/local/bin/brew \
+            /home/linuxbrew/.linuxbrew/bin/brew "$HOME/.linuxbrew/bin/brew"; do
+            if [ -x "$brew_bin" ]; then
+                if ! $DRY_RUN; then
+                    brew_env=$("$brew_bin" shellenv bash) || return 1
+                    eval "$brew_env"
+                    command -v brew &>/dev/null || return 1
+                fi
+                info "homebrew already installed: $brew_bin"
+                return
+            fi
+        done
+    fi
     if command -v brew &>/dev/null; then
         info "homebrew already installed: $(brew --prefix)"
         return
@@ -108,20 +124,24 @@ ensure_homebrew() {
         info "[dry-run] would install and activate Homebrew"
         return
     fi
-    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+    installer=$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh) || {
+        err "Failed to download the Homebrew installer"
+        return 1
+    }
+    /bin/bash -c "$installer"
 
     # Activate for the current shell session
     if [ "$OS" = "macos" ]; then
         if [ -f /opt/homebrew/bin/brew ]; then
-            eval "$(/opt/homebrew/bin/brew shellenv)"
+            eval "$(/opt/homebrew/bin/brew shellenv bash)"
         elif [ -f /usr/local/bin/brew ]; then
-            eval "$(/usr/local/bin/brew shellenv)"
+            eval "$(/usr/local/bin/brew shellenv bash)"
         fi
     else
         if [ -f /home/linuxbrew/.linuxbrew/bin/brew ]; then
-            eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+            eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv bash)"
         elif [ -f "$HOME/.linuxbrew/bin/brew" ]; then
-            eval "$("$HOME/.linuxbrew/bin/brew" shellenv)"
+            eval "$("$HOME/.linuxbrew/bin/brew" shellenv bash)"
         fi
     fi
 
@@ -292,10 +312,10 @@ link_dotfiles() {
             info "[dry-run] would create ~/.zshrc.local from the local-overrides template"
         else
             cp "$DOTFILES_DIR/zsh/.zshrc.local.example" ~/.zshrc.local
-            info "~/.zshrc.local created from local-overrides template"
+            info "$HOME/.zshrc.local created from local-overrides template"
         fi
     else
-        info "~/.zshrc.local already exists — keeping your version"
+        info "$HOME/.zshrc.local already exists — keeping your version"
     fi
 
     # Claude: link individual files so credentials and local state stay local.
@@ -348,7 +368,11 @@ post_install() {
             if ! grep -qxF "$fish_bin" /etc/shells 2>/dev/null; then
                 echo "$fish_bin" | sudo tee -a /etc/shells >/dev/null
             fi
-            chsh -s "$fish_bin" && ok || failure "chsh failed — run: chsh -s $fish_bin"
+            if chsh -s "$fish_bin"; then
+                ok
+            else
+                failure "chsh failed — run: chsh -s $fish_bin"
+            fi
         fi
     elif [ -z "$fish_bin" ]; then
         warn "fish not found on PATH — install it first, then: chsh -s \$(which fish)"

@@ -127,7 +127,7 @@ return {
 			local actions = require("telescope.actions")
 			local fb_actions = require("telescope").extensions.file_browser.actions
 
-			opts.defaults = vim.tbl_deep_extend("force", opts.defaults, {
+			opts.defaults = vim.tbl_deep_extend("force", opts.defaults or {}, {
 				wrap_results = true,
 				layout_strategy = "horizontal",
 				layout_config = { prompt_position = "top" },
@@ -190,14 +190,14 @@ return {
 				function()
 					require("close_buffers").delete({ type = "hidden" })
 				end,
-				"Close Hidden Buffers",
+				desc = "Close Hidden Buffers",
 			},
 			{
 				"<leader>tu",
 				function()
 					require("close_buffers").delete({ type = "nameless" })
 				end,
-				"Close Nameless Buffers",
+				desc = "Close Nameless Buffers",
 			},
 		},
 	},

@@ -30,11 +30,6 @@
     {
       "host": "homelab",
       "args": [],
-      "projects": [],
-    },
-    {
-      "host": "homelab",
-      "args": [],
       "projects": [
         {
           "paths": ["/home/zheng"],

@@ -1,7 +1,10 @@
 #!/usr/bin/env zsh
 
 # ── PATH ─────────────────────────────────────────────────────────────
-export PATH=$HOME/bin:$HOME/.local/bin:$PATH
+# Zsh's tied path array keeps reloads and nested shells free of duplicates.
+typeset -U path PATH
+path=("$HOME/bin" "$HOME/.local/bin" "$HOME/.bun/bin" "$HOME/.cargo/bin" $path)
+export PATH
 
 # ── Terminal / truecolor ─────────────────────────────────────────────
 # Preserve TERM supplied by the terminal emulator or tmux.
@@ -9,8 +12,12 @@ export COLORTERM="truecolor"
 export CLAUDE_CODE_TMUX_TRUECOLOR="true"
 
 # Language
-export LANG="C.UTF-8"
-export LC_CTYPE="C.UTF-8"
+if [[ -z ${LANG:-} ]]; then
+    case "$(uname -s)" in
+        Darwin) export LANG="en_US.UTF-8" ;;
+        *) export LANG="C.UTF-8" ;;
+    esac
+fi
 
 # ── Platform config ───────────────────────────────────────────────────
 # Must run early: brew shellenv sets PATH so eza/bat/fzf/zoxide/starship
@@ -23,11 +30,10 @@ case "$(uname -s)" in
     Darwin) [ -f "$ZSH_ROOT/.zshrc.macos" ] && source "$ZSH_ROOT/.zshrc.macos" ;;
     Linux)  [ -f "$ZSH_ROOT/.zshrc.linux" ] && source "$ZSH_ROOT/.zshrc.linux" ;;
 esac
+export EDITOR="nvim"
+export EZA_CONFIG_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/eza"
 unset ZSH_ROOT
 [ -f ~/.zshrc.local ] && source ~/.zshrc.local
-
-export EDITOR="nvim"
-export EZA_CONFIG_DIR="$HOME/.config/eza"
 
 # Interactive integrations never run during script execution.
 [[ -o interactive ]] || return 0
@@ -74,8 +80,8 @@ export FZF_LEGACY_KEYBINDINGS=0
 # installs completion) if the shell dir is absent.
 if [[ -o interactive ]] && command -v fzf >/dev/null 2>&1; then
     fzf_shell_dir=""
-    if command -v brew >/dev/null 2>&1; then
-        fzf_shell_dir="$(brew --prefix fzf 2>/dev/null)/shell"
+    if [[ -n ${HOMEBREW_PREFIX:-} ]]; then
+        fzf_shell_dir="$HOMEBREW_PREFIX/opt/fzf/shell"
     fi
     if [ -n "$fzf_shell_dir" ] && [ -f "$fzf_shell_dir/key-bindings.zsh" ]; then
         source "$fzf_shell_dir/key-bindings.zsh"
@@ -89,23 +95,21 @@ fi
 # or the current directory), mirroring fish's fzf_change_directory function.
 if [[ -o interactive ]] && command -v fzf >/dev/null 2>&1 && command -v ghq >/dev/null 2>&1; then
     function fzf_change_directory() {
-        local dir
+        local dir candidate
         dir=$( {
             printf '%s\n' "$HOME/.config"
-            find "$(ghq root)" -maxdepth 4 -type d -name .git 2>/dev/null | sed 's/\/\.git//'
-            ls -ad */ 2>/dev/null | perl -pe "s#^#$PWD/#" | grep -v -e '\.git'
-            ls -ad "$HOME/Developments"/*/* 2>/dev/null | grep -v -e '\.git'
-        } 2>/dev/null | sed -e 's/\/$//' | awk '!a[$0]++' | fzf )
+            ghq list -p
+            for candidate in "$PWD"/*(/N) "$HOME"/Developments/*/*(/N); do
+                printf '%s\n' "$candidate"
+            done
+        } | awk '!a[$0]++' | fzf )
         if [ -n "$dir" ] && [ -d "$dir" ]; then
-            builtin cd "$dir" && zle reset-prompt
+            builtin cd -- "$dir" && zle reset-prompt
         fi
     }
     zle -N fzf_change_directory
     bindkey '^F' fzf_change_directory
 fi
-
-# ── EZA config ───────────────────────────────────────────────────────
-export EZA_CONFIG_DIR="$HOME/.config/eza"
 
 # ── Initialize zoxide and starship ───────────────────────────────────
 # zoxide   → frecency-based `cd`/`z`

@@ -22,30 +22,42 @@ Function ln ($link, $target) {
 }
 
 Function peco_src() {
-  cd $(ghq list -p | peco)
+  if (-not (Get-Command ghq -ErrorAction SilentlyContinue) -or
+      -not (Get-Command peco -ErrorAction SilentlyContinue)) { return }
+  $directory = ghq list -p | peco
+  if ($directory -and (Test-Path -LiteralPath $directory -PathType Container)) {
+    Set-Location -LiteralPath $directory
+  }
 }
 
-Set-PSReadLineKeyHandler -Chord Ctrl+] -ScriptBlock {
+if (Get-Command Set-PSReadLineKeyHandler -ErrorAction SilentlyContinue) {
+  Set-PSReadLineKeyHandler -Chord Ctrl+] -ScriptBlock {
     [Microsoft.PowerShell.PSConsoleReadLine]::RevertLine()
     [Microsoft.PowerShell.PSConsoleReadLine]::Insert("peco_src")
     [Microsoft.PowerShell.PSConsoleReadLine]::AcceptLine()
+  }
 }
 
-Function eza_ls {eza --color auto --icons}
-
-Function eza_ll {eza -l --color always --icons}
-
-Function eza_lla {eza -l -a -g --color always --icons }
+if (Get-Command eza -ErrorAction SilentlyContinue) {
+  Function eza_ls { eza --color auto --icons @args }
+  Function eza_ll { eza -l --color auto --icons @args }
+  Function eza_lla { eza -l -a -g --color auto --icons @args }
+  Set-Alias ls eza_ls
+  Set-Alias ll eza_ll
+  Set-Alias lla eza_lla
+}
 
 # Alias
 Set-Alias g git
 Set-Alias grep findstr
-Set-Alias tig "C:\Program Files\Git\usr\bin\tig.exe"
-Set-Alias less "C:\Program Files\Git\usr\bin\less.exe"
-Set-Alias ls eza_ls
-Set-Alias ll eza_ll
-Set-Alias lla eza_lla
-Set-Alias vim nvim
+foreach ($tool in 'tig', 'less') {
+  if ($env:ProgramFiles) {
+    $toolPath = Join-Path $env:ProgramFiles "Git\usr\bin\$tool.exe"
+    if (Test-Path -LiteralPath $toolPath) { Set-Alias $tool $toolPath }
+  }
+}
+if (Get-Command nvim -ErrorAction SilentlyContinue) { Set-Alias vim nvim }
+Remove-Variable tool, toolPath -ErrorAction SilentlyContinue
 
 # Point starship at the Windows-compatible config
 $env:STARSHIP_CONFIG = "$env:USERPROFILE\.config\starship.toml"

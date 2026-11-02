@@ -63,6 +63,24 @@ try {
     $env:USERPROFILE = Join-Path $testRoot 'fresh profile'
     Main
     Assert (-not (Test-Path -LiteralPath $env:USERPROFILE)) 'full dry run created profile files'
+
+    # Profile wrappers must forward paths and flags rather than discard them.
+    & {
+        function eza { $script:EzaArguments = @($args) }
+        function starship { '$null = 0' }
+        function zoxide { '$null = 0' }
+        # Profile startup must tolerate PSReadLine being unavailable.
+        function Set-PSReadLineKeyHandler { }
+        . (Join-Path $PSScriptRoot '../config/powershell/Microsoft.PowerShell_profile.ps1')
+        eza_ll '--all' 'directory with spaces'
+        Assert ($script:EzaArguments[-2] -eq '--all') 'eza option was discarded'
+        Assert ($script:EzaArguments[-1] -eq 'directory with spaces') 'eza path was split or discarded'
+        $previousLocation = Get-Location
+        function ghq { 'unused' }
+        function peco { $null }
+        peco_src
+        Assert ((Get-Location).Path -eq $previousLocation.Path) 'cancelled directory picker changed location'
+    }
     Write-Host 'Windows installer helper tests passed.'
 } finally {
     $env:USERPROFILE = $originalUserProfile

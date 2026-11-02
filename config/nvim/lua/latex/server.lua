@@ -27,23 +27,25 @@ end
 
 --- Start the Neovim server socket (for reverse sync)
 local function ensure_nvim_socket()
-  if nvim_socket and vim.fn.serverlist():find(nvim_socket, 1, true) then
+  if nvim_socket and vim.tbl_contains(vim.fn.serverlist(), nvim_socket) then
     return nvim_socket
   end
 
-  -- Create a socket name based on the project directory
-  local cwd = vim.fn.getcwd()
-  local cwd_name = vim.fn.fnamemodify(cwd, ":t")
-  nvim_socket = "/tmp/nvim-latex-" .. cwd_name .. ".sock"
+  -- Reuse the active server, or let Neovim choose a private, unique address.
+  if vim.v.servername ~= "" then
+    nvim_socket = vim.v.servername
+    return nvim_socket
+  end
 
   -- vim.fn.serverstart returns the socket path on success, empty on failure
-  local ok, result = pcall(vim.fn.serverstart, nvim_socket)
-  if not ok then
+  local ok, result = pcall(vim.fn.serverstart)
+  if not ok or result == "" then
     vim.notify("[latex-preview] Failed to start Neovim server socket", vim.log.levels.WARN)
     nvim_socket = nil
     return nil
   end
 
+  nvim_socket = result
   return nvim_socket
 end
 
@@ -228,16 +230,8 @@ function M.open_browser()
     )
   else
     -- Running locally: try to open the browser
-    local ok = pcall(function()
-      if vim.fn.has("mac") == 1 then
-        vim.fn.system({ "open", url })
-      elseif vim.fn.has("unix") == 1 then
-        vim.fn.system({ "xdg-open", url, ">/dev/null", "2>&1", "&" })
-      elseif vim.fn.has("win32") == 1 then
-        vim.fn.system({ "cmd", "/c", "start", url })
-      end
-    end)
-    if not ok then
+    local process = vim.ui.open(url)
+    if not process then
       vim.notify("[latex-preview] PDF viewer: " .. url)
     end
   end

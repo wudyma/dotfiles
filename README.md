@@ -75,7 +75,8 @@ errors stop setup immediately. A dry run performs no downloads or config writes.
 ## Shell behavior
 
 Platform files set up an existing Homebrew installation before optional tools are
-loaded. Shell startup never installs Homebrew, Oh My Zsh, or Fish plugins. Oh My
+loaded, using explicit Fish/Zsh syntax for `brew shellenv`. Shell startup never
+installs Homebrew, Oh My Zsh, or Fish plugins. Oh My
 Zsh automatic updates are disabled; updates are explicit maintenance operations.
 Fish plugins are vendored, so a fresh clone needs no Fisher bootstrap or downloads.
 The pinned fzf.fish version requires Fish 4+, fzf 0.33+, fd 8.5+, and bat 0.16+;
@@ -84,6 +85,11 @@ the full installer obtains these tools through Homebrew.
 Environment variables are available to scripts; aliases, bindings, zoxide, and
 Starship are initialized only in interactive shells. Fish and Zsh preserve the
 terminal-provided `TERM`; tmux advertises `tmux-256color` inside its panes.
+Inherited locale settings are preserved. User, Bun, and Cargo binary directories
+are available in both shells without accumulating duplicate PATH entries on reload.
+Local overrides load after shared environment defaults. Linux uses the existing
+TeX Live directory for the host architecture and only selects the K3s kubeconfig
+when that file exists and `KUBECONFIG` is unset.
 
 - `ls`, `ll`, `la`, `lla` use eza when available; `cat` uses bat when available.
 - `g` runs Git, `c` runs Claude, and `vim` runs Neovim when installed.
@@ -105,8 +111,10 @@ SSH loads `~/.ssh/config.d/*` before shared defaults. Proxy settings are optiona
 copy `ssh/examples/github-proxy.conf` there only if you use that local proxy, and
 install the `connect` executable separately (`brew install connect`). Shared
 configuration does not force a proxy. It enables connection multiplexing,
-keepalives, compression, and hashed known-host entries, leaving algorithm
+keepalives, and hashed known-host entries, leaving compression and algorithm
 selection to OpenSSH defaults. Unix setup creates `~/.ssh/sockets` with mode 700.
+Multiplexed connections use `%C` to keep socket paths short for long hostnames
+and jump hosts; enable compression per host when needed.
 Windows OpenSSH does not provide Unix-style multiplexing; its client determines
 which shared options are supported.
 
@@ -163,6 +171,10 @@ by the installer. Adapt those settings before using Claude on a new machine.
   Starting tmux does not download TPM or plugins.
 - **Ghostty, Zed, Yazi, bat, eza:** personal fonts, themes, and application settings
   live in their config directories. Theme assets may require separate installation.
+  Ghostty uses the supported `config.ghostty` filename (Ghostty 1.2.3+).
+  Yazi uses the current `[mgr]` table and `%s` opener arguments (Yazi 26+),
+  preserving default file-opening rules and supporting Neovim on Unix and Windows.
+  Run `ya pkg install` after linking to install its locked Catppuccin flavor.
 - **Fonts:** Maple Mono NF CN, with a JetBrains Mono fallback in the installer.
 
 After full setup, restart your terminal. In tmux, press `prefix + I` to install
@@ -191,14 +203,24 @@ Run checks locally:
 
 ```bash
 bash -n install/install.sh
+shellcheck install/install.sh
+actionlint
 python3 -m unittest discover -s tests -v
 pwsh -NoProfile -File tests/test_windows.ps1
 ```
 
-Install Fish and Zsh to run all shell smoke tests; otherwise those tests are
-reported as skipped. CI installs the required shells on macOS/Linux and runs
-Windows-specific symlink/junction tests on Windows. Tests use temporary directories
-and do not install packages or change the default shell.
+Use Python 3.11+; install Fish 4+, Zsh, tmux, and Neovim to run all smoke tests.
+Tests for unavailable applications are reported as skipped. CI provides Python
+3.14 and all required applications on macOS/Linux, lints the workflow and Bash
+installer on Linux, and runs symlink/junction and profile tests on Windows.
+Tests use temporary directories, parse JSON/TOML, compile Neovim Lua, and load
+and reload an isolated tmux server without plugins. They do not install packages
+or change the default shell.
+
+CI checks that the Neovim lockfile is actually tracked. Actions are pinned to
+release commit SHAs and maintained by Dependabot. Platform jobs finish
+independently so one failure does not hide results from another OS. New pushes
+cancel older runs for the same ref; each job has a time limit.
 
 See [the repository review](docs/repository-review.md) for completed changes and
 verification limits.

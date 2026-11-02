@@ -4,9 +4,9 @@
 # Homebrew installation is handled by install/install.sh.
 # This block only sets up the fish-side environment (PATH, MANPATH, etc.).
 if test -f /opt/homebrew/bin/brew
-    eval (/opt/homebrew/bin/brew shellenv)
+    /opt/homebrew/bin/brew shellenv fish | source
 else if test -f /usr/local/bin/brew
-    eval (/usr/local/bin/brew shellenv)
-else
+    /usr/local/bin/brew shellenv fish | source
+else if status is-interactive
     echo "⚠  Homebrew not found. Run install/install.sh first." >&2
 end
