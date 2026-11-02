@@ -100,6 +100,11 @@ when that file exists and `KUBECONFIG` is unset.
 - Zoxide supplies directory navigation; Starship supplies the prompt.
 - Bass is available in interactive Fish to import Bash environment changes.
 
+Fish's fzf file preview is limited to 500 lines and uses the plugin's supported
+`fzf_preview_file_cmd`/`fzf_preview_dir_cmd` settings. Zsh loads syntax
+highlighting after fzf, zoxide, and Starship have installed their widgets.
+Long listings show icons only when writing to a terminal.
+
 ## Machine-local settings
 
 Fish loads `~/.config/fish/config-local.fish`; Zsh loads `~/.zshrc.local`. Both are
@@ -166,16 +171,29 @@ by the installer. Adapt those settings before using Claude on a new machine.
 - **Neovim:** LazyVim with Python, TypeScript, Tailwind, and LaTeX configuration;
   oxlint/oxfmt for JS/TS and ty/ruff for Python. The tracked lockfile records the
   existing plugin revisions. Language servers and parsers remain separate downloads.
+  Telescope handles both standard LazyVim picker mappings and custom mappings.
+  Tailwind recognizes `cn`/`cva`/`cx`/`clsx` through `classFunctions`. Clipboard
+  setup follows LazyVim's local/SSH defaults, including OSC 52 over SSH.
+  Start LaTeX preview with `:LatexPreviewStart` or `<leader>lv`; optional automatic
+  startup is enabled with `vim.g.latex_preview_auto_start = true` in Neovim options.
+  Exiting Neovim stops only a preview process owned by that editor instance.
 - **tmux:** `Ctrl-t` prefix, Catppuccin Mocha theme, `prefix + g` for lazygit,
   `prefix + y` for the Claude session-manager popup, and `prefix + r` to reload.
   Starting tmux does not download TPM or plugins.
+  Terminal capabilities use a fixed array entry, so config reloads do not
+  accumulate duplicates; undercurl uses the supported `usstyle` capability.
 - **Ghostty, Zed, Yazi, bat, eza:** personal fonts, themes, and application settings
   live in their config directories. Theme assets may require separate installation.
   Ghostty uses the supported `config.ghostty` filename (Ghostty 1.2.3+).
   Yazi uses the current `[mgr]` table and `%s` opener arguments (Yazi 26+),
   preserving default file-opening rules and supporting Neovim on Unix and Windows.
   Run `ya pkg install` after linking to install its locked Catppuccin flavor.
+  Ghostty preserves the configured block cursor at the prompt. Zed uses the same
+  ty/Ruff Python toolchain as Neovim and organizes imports before Ruff formatting.
 - **Fonts:** Maple Mono NF CN, with a JetBrains Mono fallback in the installer.
+
+Starship shows the hostname over SSH, the commit hash for detached HEAD, and
+active Git merge/rebase state. Its existing palette and prompt layout are retained.
 
 After full setup, restart your terminal. In tmux, press `prefix + I` to install
 plugins explicitly. In Neovim, use `:Lazy restore` to return installed plugins to
@@ -209,18 +227,23 @@ python3 -m unittest discover -s tests -v
 pwsh -NoProfile -File tests/test_windows.ps1
 ```
 
-Use Python 3.11+; install Fish 4+, Zsh, tmux, and Neovim to run all smoke tests.
+Use Python 3.11+; install Fish 4+, Zsh, tmux, Neovim, Starship, bat, eza, and
+oxfmt to run all smoke tests.
 Tests for unavailable applications are reported as skipped. CI provides Python
 3.14 and all required applications on macOS/Linux, lints the workflow and Bash
 installer on Linux, and runs symlink/junction and profile tests on Windows.
-Tests use temporary directories, parse JSON/TOML, compile Neovim Lua, and load
-and reload an isolated tmux server without plugins. They do not install packages
+Tests use temporary directories, parse JSON/TOML/JSONC, compile Neovim Lua, render
+remote/detached/merging prompts, and load and reload an isolated tmux server
+without plugins. They do not install packages
 or change the default shell.
 
 CI checks that the Neovim lockfile is actually tracked. Actions are pinned to
 release commit SHAs and maintained by Dependabot. Platform jobs finish
 independently so one failure does not hide results from another OS. New pushes
 cancel older runs for the same ref; each job has a time limit.
+
+Plugin update checks are explicit: use `:Lazy check`/`:Lazy update` in Neovim.
+Windows batch/cmd files use CRLF on checkout; other text files use LF.
 
 See [the repository review](docs/repository-review.md) for completed changes and
 verification limits.

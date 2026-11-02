@@ -4,27 +4,39 @@
   "autosave": "on_focus_change",
   "format_on_save": "on",
   "soft_wrap": "editor_width",
+  // Match Neovim's Python toolchain; project pyproject.toml/ruff.toml still apply.
+  "languages": {
+    "Python": {
+      "language_servers": ["ty", "ruff"],
+      "code_actions_on_format": {
+        "source.organizeImports.ruff": true
+      },
+      "formatter": {
+        "language_server": { "name": "ruff" }
+      }
+    }
+  },
   // Themes
   "theme": "One Dark",
   // Typography
   "buffer_font_family": "Maple Mono NF CN",
   "buffer_font_size": 16,
   "buffer_line_height": {
-    "custom": 1.8,
+    "custom": 1.8
   },
   "buffer_font_features": {
-    "calt": true,
+    "calt": true
   },
   "ui_font_family": "Maple Mono NF CN",
   "ui_font_features": {
-    "calt": true,
+    "calt": true
   },
   "agent_buffer_font_size": 16,
   // AI
   "agent_servers": {
     "codex-acp": {
-      "type": "registry",
-    },
+      "type": "registry"
+    }
   },
   "ssh_connections": [
     {
@@ -32,12 +44,12 @@
       "args": [],
       "projects": [
         {
-          "paths": ["/home/zheng"],
+          "paths": ["/home/zheng"]
         },
         {
-          "paths": ["/home/zheng/wikis/company"],
-        },
-      ],
-    },
-  ],
+          "paths": ["/home/zheng/wikis/company"]
+        }
+      ]
+    }
+  ]
 }

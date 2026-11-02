@@ -6,9 +6,11 @@ if not (vim.uv or vim.loop).fs_stat(lazypath) then
     vim.api.nvim_echo({
       { "Failed to clone lazy.nvim:\n", "ErrorMsg" },
       { out, "WarningMsg" },
-      { "\nPress any key to exit..." },
+      { "\nRun the bootstrap again after fixing the Git error." },
     }, true, {})
-    vim.fn.getchar()
+    if #vim.api.nvim_list_uis() > 0 then
+      vim.fn.getchar()
+    end
     os.exit(1)
   end
 end
@@ -19,6 +21,7 @@ require("lazy").setup({
     -- add LazyVim and import its plugins
     { "LazyVim/LazyVim", import = "lazyvim.plugins" },
     -- import extras (loaded before user plugins so overrides merge on top)
+    { import = "lazyvim.plugins.extras.editor.telescope" },
     { import = "lazyvim.plugins.extras.lang.python" },
     { import = "lazyvim.plugins.extras.lang.typescript" },
     { import = "lazyvim.plugins.extras.lang.tailwind" },
@@ -37,9 +40,9 @@ require("lazy").setup({
   },
   install = { colorscheme = { "tokyonight", "habamax" } },
   checker = {
-    enabled = true, -- check for plugin updates periodically
+    enabled = false, -- use :Lazy check / :Lazy update explicitly
     notify = false, -- notify on update
-  }, -- automatically check for plugin updates
+  },
   performance = {
     rtp = {
       -- disable some rtp plugins

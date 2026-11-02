@@ -52,11 +52,7 @@ end
 --- Walk up from current .tex file to find project root (.latexmkrc)
 function M.detect_project()
   local tex_file = vim.fn.expand("%:p")
-  if tex_file == "" then
-    tex_file = vim.fn.getcwd()
-  end
-
-  local dir = vim.fn.fnamemodify(tex_file, ":h")
+  local dir = tex_file == "" and vim.fn.getcwd() or vim.fn.fnamemodify(tex_file, ":h")
   local root = dir
   while true do
     local latexmkrc = root .. "/.latexmkrc"
@@ -96,6 +92,10 @@ end
 
 --- Start the latex-preview-server
 function M.start()
+  -- A process can be starting before its HTTP endpoint is ready.
+  if server_job then
+    return
+  end
   -- First check if a server is already running (maybe started externally)
   if M.detect_running() then
     vim.notify("[latex-preview] Server already running on port " .. server_port)
@@ -150,9 +150,11 @@ function M.start()
         end
       end
     end,
-    on_exit = function(_, code, _)
-      server_job = nil
-      server_port = nil
+    on_exit = function(job_id, code, _)
+      if server_job == job_id then
+        server_job = nil
+        server_port = nil
+      end
       if code and code ~= 0 then
         vim.notify("[latex-preview] Server exited with code " .. code, vim.log.levels.WARN)
       end
@@ -176,13 +178,7 @@ function M.stop()
     server_port = nil
     vim.notify("[latex-preview] Server stopped")
   else
-    -- Try to stop any server on the known port
-    if server_port then
-      vim.fn.system({ "curl", "--noproxy", "*", "-s", "-X", "POST",
-        "http://" .. HOST .. ":" .. server_port .. "/shutdown",
-        "--max-time", "2" })
-    end
-    server_port = nil
+    -- Discovering an external service does not make this editor its owner.
     vim.notify("[latex-preview] No managed server to stop")
   end
 end

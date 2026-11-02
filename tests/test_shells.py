@@ -188,3 +188,16 @@ class ShellTests(unittest.TestCase):
         self.assertEqual(result.stdout, 'xterm-ghostty')
         self.assertFalse(self.marker.exists())
         self.assertFalse((self.root / '.oh-my-zsh').exists())
+
+    def test_zsh_highlighting_loads_after_navigation_and_prompt_widgets(self):
+        for name, variable in (('zoxide', 'NAV_WIDGET_READY'), ('starship', 'PROMPT_WIDGET_READY')):
+            stub = self.bin / name
+            stub.write_text(f'#!/bin/sh\nprintf "typeset -g {variable}=1\\n"\n')
+            stub.chmod(0o755)
+        plugin = self.root / '.oh-my-zsh/custom/plugins/zsh-syntax-highlighting'
+        plugin.mkdir(parents=True)
+        (plugin / 'zsh-syntax-highlighting.zsh').write_text(
+            '[[ $NAV_WIDGET_READY == 1 && $PROMPT_WIDGET_READY == 1 ]] || return 92\n'
+            'print -r -- ready > "$DOTFILES_TEST_MARKER"\n')
+        self.run_shell('zsh', 'source "$ZDOTDIR/.zshrc"', interactive=True)
+        self.assertEqual(self.marker.read_text(), 'ready\n')

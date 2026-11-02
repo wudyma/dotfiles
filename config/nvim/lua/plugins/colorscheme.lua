@@ -26,12 +26,12 @@ return {
     "projekt0n/github-nvim-theme",
     name = "github-theme",
     lazy = true, -- make sure we load this during startup if it is your main colorscheme
-    transparent = true,
+    opts = { options = { transparent = true } },
   },
   {
     "LazyVim/LazyVim",
     opts = {
-      colorscheme = "catppuccin-nvim",
+      colorscheme = "catppuccin",
     },
   },
 }

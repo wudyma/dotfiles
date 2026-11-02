@@ -45,7 +45,7 @@ DISABLE_UNTRACKED_FILES_DIRTY="true"
 DISABLE_AUTO_UPDATE="true"
 zstyle ':omz:update' mode disabled
 plugins=(git extract copypath copyfile web-search)
-for plugin in zsh-autosuggestions zsh-syntax-highlighting; do
+for plugin in zsh-autosuggestions; do
     if [ -f "${ZSH_CUSTOM:-$ZSH/custom}/plugins/$plugin/$plugin.plugin.zsh" ]; then
         plugins+=("$plugin")
     fi
@@ -58,7 +58,7 @@ unset plugin
 if command -v eza >/dev/null 2>&1; then
     alias ls="eza"
     alias la="ls -a"
-    alias ll="eza -l -g --icons"
+    alias ll="eza -l -g --icons=auto"
     alias lla="ll -a"
 fi
 command -v bat >/dev/null 2>&1 && alias cat="bat"
@@ -68,10 +68,6 @@ command -v nvim >/dev/null 2>&1 && alias vim="nvim"
 alias g="git"
 alias c="claude"
 alias "claude-yolo"="claude --dangerously-skip-permissions"
-
-# ── fzf ──────────────────────────────────────────────────────────────
-export FZF_PREVIEW_FILE_CMD="bat --style=numbers --color=always --line-range :500"
-export FZF_LEGACY_KEYBINDINGS=0
 
 # fzf shell integration (Ctrl-R history, Ctrl-T files, Alt-C cd). Only for
 # interactive shells (these bind zle widgets). Prefer sourcing only
@@ -120,3 +116,10 @@ fi
 if command -v starship >/dev/null 2>&1; then
     eval "$(starship init zsh)"
 fi
+
+# Load after fzf, zoxide, and prompt widgets, as required by the plugin.
+zsh_highlight_file="${ZSH_CUSTOM:-$ZSH/custom}/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
+if [ -f "$zsh_highlight_file" ]; then
+    source "$zsh_highlight_file"
+fi
+unset zsh_highlight_file

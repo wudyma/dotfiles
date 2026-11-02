@@ -1,5 +1,37 @@
 # Repository review
 
+## Application configuration follow-up — 2026-11-02
+
+The previous change is committed as `fd218b5`; Linux/macOS validation and native
+Windows helper tests passed in [Actions](https://github.com/wudyma/dotfiles/actions/runs/41396129585).
+This follow-up reviews tool behavior beyond parsing configuration files.
+
+| Area | Follow-up change |
+| --- | --- |
+| tmux | Replace repeated terminal-feature appends with one indexed entry; use named `usstyle` capability for undercurl instead of platform-wide terminfo overrides. |
+| Shells | Load Zsh highlighting after navigation/prompt widgets; use fzf.fish's actual preview variables with a 500-line preview limit; remove unused theme/legacy integration settings; auto-detect listing icons. |
+| Starship | Show SSH hostname, detached commit, and active Git operations; apply the declared duration color in its format string. |
+| Neovim | Select ty/Ruff through LazyVim's supported options; enable the Telescope extra for consistent picker mappings; use Tailwind `classFunctions`; retain LazyVim's SSH-aware clipboard; use standard theme configuration. Update checks are explicit and headless bootstrap errors exit without waiting for input. |
+| LaTeX | Configure mappings in the initial TeX buffer; make preview autostart opt-in; prevent duplicate pending processes and stale exit callbacks; stop only owned processes; detect the current directory correctly for unnamed buffers. |
+| Zed/Ghostty | Match ty/Ruff and import organization between editors; keep Ghostty's configured block cursor at the prompt. |
+| Git attributes | Use valid case-insensitive glob patterns for Windows cmd/bat line endings; brace expansion was not a supported attribute pattern. |
+
+Validation now includes 33 Python checks with actual Starship prompt rendering,
+clean bat/eza environments, JSONC parsing/formatting, tmux capability stability
+after reload, and Zsh plugin ordering. The LaTeX lifecycle checks use a mocked
+process/HTTP boundary inside a real Neovim process. CI installs all required
+applications so those checks cannot silently skip due to missing tools.
+
+References: [LazyVim Python options](https://www.lazyvim.org/extras/lang/python),
+[LazyVim plugin customization](https://www.lazyvim.org/configuration/plugins),
+[Tailwind class functions](https://github.com/tailwindlabs/tailwindcss-intellisense#tailwindcssclassfunctions),
+[Zsh highlighting load order](https://github.com/zsh-users/zsh-syntax-highlighting/blob/master/INSTALL.md),
+[tmux capabilities](https://man.openbsd.org/tmux.1),
+[Starship modules](https://starship.rs/config/),
+[Zed Python setup](https://zed.dev/docs/languages/python),
+[Ghostty cursor integration](https://ghostty.org/docs/config/reference#shell-integration-features),
+and [Git attributes](https://git-scm.com/docs/gitattributes).
+
 ## Update — 2026-11-02
 
 The latest failed [Actions run](https://github.com/wudyma/dotfiles/actions/runs/41395085718)

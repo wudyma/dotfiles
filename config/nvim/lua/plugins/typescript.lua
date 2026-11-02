@@ -1,5 +1,5 @@
 return {
-  -- Override tailwindcss: add classRegex for shadcn/ui / Next.js (cn, cva, cx)
+  -- Use the supported function-name setting for nested calls and templates.
   {
     "neovim/nvim-lspconfig",
     opts = {
@@ -7,13 +7,7 @@ return {
         tailwindcss = {
           settings = {
             tailwindCSS = {
-              experimental = {
-                classRegex = {
-                  { 'cva\\(([^)]*)\\)', "[\"'`]([^\"'`]*).*?[\"'`]" },
-                  { 'cx\\(([^)]*)\\)',  "[\"'`]([^\"'`]*).*?[\"'`]" },
-                  { 'cn\\(([^)]*)\\)',  "[\"'`]([^\"'`]*).*?[\"'`]" },
-                },
-              },
+              classFunctions = { "cn", "cva", "cx", "clsx" },
             },
           },
         },

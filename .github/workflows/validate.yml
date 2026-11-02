@@ -40,7 +40,7 @@ jobs:
           if [ "$RUNNER_OS" = Linux ]; then
             eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv bash)"
           fi
-          brew install fish zsh tmux neovim
+          brew install fish zsh tmux neovim starship bat eza oxfmt
           echo "$(brew --prefix)/bin" >> "$GITHUB_PATH"
       - name: Check test tools
         run: |
@@ -48,6 +48,10 @@ jobs:
           zsh --version
           tmux -V
           nvim --version
+          starship --version
+          bat --version
+          eza --version
+          oxfmt --version
       - name: Lint workflow and installer
         if: runner.os == 'Linux'
         run: |

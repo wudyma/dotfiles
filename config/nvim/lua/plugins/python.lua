@@ -1,16 +1,4 @@
 return {
-  -- Override LSP: use ty for type checking instead of pyright
-  {
-    "neovim/nvim-lspconfig",
-    opts = {
-      servers = {
-        ty = {},
-        pyright = { enabled = false },
-        basedpyright = { enabled = false },
-      },
-    },
-  },
-
   -- Override formatter: ruff format + organize imports
   {
     "stevearc/conform.nvim",

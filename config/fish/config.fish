@@ -40,18 +40,11 @@ end
 # Only environment setup belongs in non-interactive shells.
 status is-interactive; or return
 
-# ── Theme ─────────────────────────────────────────────────────────────
-set -g theme_color_scheme terminal-dark
-set -g fish_prompt_pwd_dir_length 1
-set -g theme_display_user yes
-set -g theme_hide_hostname no
-set -g theme_hostname always
-
 # ── Aliases ──────────────────────────────────────────────────────────
 if type -q eza
     alias ls eza
     alias la "ls -a"
-    alias ll "eza -l -g --icons"
+    alias ll "eza -l -g --icons=auto"
     alias lla "ll -a"
 end
 alias g git
@@ -62,9 +55,13 @@ if type -q bat
     alias cat bat
 end
 
-# ── fzf ──────────────────────────────────────────────────────────────
-set -g FZF_PREVIEW_FILE_CMD "bat --style=numbers --color=always --line-range :500"
-set -g FZF_LEGACY_KEYBINDINGS 0
+# fzf.fish uses these lower-case variables; preserve local overrides.
+if type -q bat; and not set -q fzf_preview_file_cmd
+    set -g fzf_preview_file_cmd 'bat --paging=never --style=numbers --color=always --line-range=:500 --'
+end
+if type -q eza; and not set -q fzf_preview_dir_cmd
+    set -g fzf_preview_dir_cmd 'eza --all --color=always --icons=always --'
+end
 
 # Load complete vendored plugins after platform PATH and local overrides.
 set -l vendor_dir (dirname (status --current-filename))/vendor

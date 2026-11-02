@@ -11,7 +11,7 @@
 | Binding | Scope | Description |
 |---------|-------|-------------|
 | `prefix r` | — | Reload config from `~/.config/tmux/tmux.conf` |
-| `prefix o` | — | Open current pane's working directory in Finder (macOS) |
+| `prefix o` | — | Open the pane directory with Finder on macOS or xdg-open on Linux |
 | `prefix e` | repeatable | Kill all panes except the active one |
 | `C-S-Left` | no prefix | Swap window one position left, then switch to it |
 | `C-S-Right` | no prefix | Swap window one position right, then switch to it |
@@ -21,7 +21,7 @@
 | Binding | Scope | Description |
 |---------|-------|-------------|
 | `prefix g` | repeatable | Open lazygit in an 80%×80% centered popup |
-| `prefix y` | repeatable | Open Claude Code in a popup (dedicated session) |
+| `prefix y` | repeatable | Open the session-manager popup (configured to run Codex) |
 
 ### tmux-pain-control Plugin
 
@@ -67,6 +67,11 @@ All require the prefix key.
 ## Vi Mode
 
 `mode-keys vi` — copy/scroll mode uses vi keys (`h/j/k/l`, `/`, `?`, `y`).
+On macOS, `y` copies the selection with `pbcopy`.
+
+The `xterm*` terminal entry enables RGB, extended keys, and undercurl through
+`terminal-features[100]`. Reloading replaces this entry rather than appending
+duplicate capabilities. tmux's built-in terminal entries are preserved.
 
 ## Plugins
 
