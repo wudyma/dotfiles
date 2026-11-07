@@ -1,18 +1,20 @@
-theme = Ultra Dark
+theme = "GitHub Dark Default"
 
-font-family = Maple Mono NF CN
-font-size = 18
+desktop-notifications = true
 
 background-opacity = 0.8
-background-blur = macos-glass-regular
+background-blur = 20
+
+font-family = "Maple Mono NF CN"
 
 cursor-style = block
 cursor-style-blink = true
 
-macos-option-as-alt = true
+macos-option-as-alt = left
 
 window-padding-x = 8
 window-padding-y = 8
 
-# Keep the configured block cursor at the prompt as well as in applications.
-shell-integration-features = no-cursor,ssh-env,ssh-terminfo
+bell-features = no-system
+
+shell-integration-features = ssh-env,ssh-terminfo
