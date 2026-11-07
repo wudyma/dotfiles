@@ -13,6 +13,7 @@ return {
   {
     "catppuccin/nvim",
     name = "catppuccin",
+    lazy = false,
     priority = 1000,
     opts = {
       flavour = "mocha",
@@ -25,13 +26,14 @@ return {
   {
     "projekt0n/github-nvim-theme",
     name = "github-theme",
-    lazy = true, -- make sure we load this during startup if it is your main colorscheme
+    lazy = false, -- make sure we load this during startup if it is your main colorscheme
+    priority = 1000,
     opts = { options = { transparent = true } },
   },
   {
     "LazyVim/LazyVim",
     opts = {
-      colorscheme = "catppuccin",
+      colorscheme = "github_dark_default",
     },
   },
 }

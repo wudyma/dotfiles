@@ -10,5 +10,3 @@ vim.g.lazyvim_python_ruff = "ruff"
 
 -- Make LazyVim's built-in picker keymaps match the custom Telescope mappings.
 vim.g.lazyvim_picker = "telescope"
-
-opt.smoothscroll = false
