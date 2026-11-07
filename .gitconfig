@@ -8,17 +8,8 @@
   gpgSign = true
   # Show the staged diff in the commit-message editor.
   verbose = true
-
-# Prefer SSH for common Git hosts, including HTTPS clone/submodule URLs.
-[url "git@github.com:"]
-  insteadOf = https://github.com/
-[url "git@gist.github.com:"]
-  insteadOf = https://gist.github.com/
-[url "git@gitlab.com:"]
-  insteadOf = https://gitlab.com/
 [ghq]
   root = ~/repos
-
 [init]
   defaultBranch = main
 [fetch]
@@ -87,13 +78,11 @@
   dump = cat-file -p
   unmerged = diff --name-only --diff-filter=U
   add-unmerged = "!git diff --name-only --diff-filter=U -z | git --literal-pathspecs add --pathspec-from-file=- --pathspec-file-nul"
-
 [filter "lfs"]
   clean = git-lfs clean -- %f
   smudge = git-lfs smudge -- %f
   required = true
   process = git-lfs filter-process
-
 # Optional machine-specific overrides; keep this include last.
 [include]
   path = ~/.gitconfig.local
