@@ -13,20 +13,6 @@ elif [[ -o interactive ]]; then
     echo "⚠  Homebrew not found. Install it first, then brew install zsh." >&2
 fi
 
-# ── bun ──────────────────────────────────────────────────────────────
-export BUN_INSTALL="$HOME/.bun"
-
-# ── nvm ──────────────────────────────────────────────────────────────
-export NVM_DIR="$HOME/.nvm"
-if [[ -o interactive ]]; then
-    [ ! -s "$NVM_DIR/nvm.sh" ] || source "$NVM_DIR/nvm.sh"
-fi
-
-# ── TeX Live ─────────────────────────────────────────────────────────
-texlive_bin="$HOME/.local/texlive/2026/bin/$(uname -m)-linux"
-[ ! -d "$texlive_bin" ] || path=("$texlive_bin" $path)
-unset texlive_bin
-
 # ── K3S / Kubernetes ─────────────────────────────────────────────────
 if [[ -z ${KUBECONFIG:-} && -f "$HOME/.config/k3s/k3s.yaml" ]]; then
     export KUBECONFIG="$HOME/.config/k3s/k3s.yaml"
